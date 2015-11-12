@@ -1,0 +1,37 @@
+<style media="screen">
+  .button{
+    background-color: blue;
+    color: white;
+    border: 1px solid darkblue;
+    text-decoration: none;
+    font-size: 1em;
+    font-family: lato;
+    padding: 10px;
+    background: -webkit-linear-gradient(left,red,orange,yellow, green, blue,indigo,violet);
+
+  }
+  .fadein{
+    -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
+    animation: fadein 2s;
+  }
+@keyframes fadein {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+  }
+  /* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+  .button:hover{
+    background-color:red;
+    -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
+    animation: fadein 2s;
+  }
+</style>
+
+<a href="#" class="fadein button">Click Me</a>
+
+<button type="button" name="button" class="button">Click Me</button>
+
+<input type="button" name="name" class="button" value="Click Me">
