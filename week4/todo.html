@@ -1,0 +1,18 @@
+
+<button type="button" onclick="makeEggplant()" name="button">Make Eggy</button>
+<ul>
+</ul>
+<input type="field" name="name" value="">
+<script type="text/javascript">
+  function makeEggplant(){
+    //create new li
+    var list = document.createElement("li");
+    // set its text content
+    list.textContent = "🍆";
+    //get the ul
+    ul = document.querySelector("ul");
+    //append
+    ul.appendChild(list);
+  }
+
+</script>
