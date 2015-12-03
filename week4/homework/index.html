@@ -83,36 +83,89 @@
     </style>
   </head>
   <body>
-    <header>
-      <img src="images/acme-corp.jpg" alt="" width="200px" height="auto"/>
-      <nav>
-        <ul>
-          <li><a href="#">Product</a></li>
-          <li><button type="button" name="button">Sign Up</button></li>
-        </ul>
-      </nav>
-    </header>
-    <main>
-      <section>
-        <h2>Welcome to ACME Corp!</h2>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-        </p>
-        <p>
-          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-      </section>
-    </main>
-    <footer>
-      <p>
-        Copyright, 2015
-      </p>
-    </footer>
     <script type="text/javascript">
-      function addButton(){
-        var newDiv = document
-      }
+      var body = document.querySelector("body");
+      // Header stuff
+      var header = document.createElement("header");
+      body.appendChild(header);
+      var logo = new Image(200);
+      logo.src = "images/acme-corp.jpg";
+      header.appendChild(logo);
+      var nav = document.createElement("nav");
+      header.appendChild(nav);
+      var navButtons = document.createElement("ul");
+      nav.appendChild(navButtons);
+      var product = document.createElement("li");
+      var productLink = document.createElement("a");
+      productLink.textContent = "Product";
+      productLink.href ="blah.com"
+      var signUpButtonListItem = document.createElement("li");
+      var signUpButton = document.createElement("button");
+      signUpButton.textContent = "Sign Up";
+      signUpButton.type = "button"
+      navButtons.appendChild(product);
+      navButtons.appendChild(signUpButtonListItem);
+      signUpButtonListItem.appendChild(signUpButton);
+      product.appendChild(productLink);
+
+      //Body Content
+        //create main
+        var main = document.createElement("main");
+        body.appendChild(main);
+        //create section
+          var section = document.createElement("section");
+          main.appendChild(section);
+            //create h2 with text Welcome to ACME Corp!
+            var bodyHeader = document.createElement("h2");
+            bodyHeader.textContent = "Welcome to ACME Corp!";
+            section.appendChild(bodyHeader);
+            //create body P with lorem ipsum text
+            var bodyp1 = document.createElement("p");
+            bodyp1.textContent = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+            section.appendChild(bodyp1);
+            var bodyp2 = document.createElement("p");
+            bodyp2.textContent = "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+            section.appendChild(bodyp2);
+
+      //Create footer
+      var footer = document.createElement("footer");
+      body.appendChild(footer);
+        var copyRightP = document.createElement("p");
+        copyRightP.textContent = "Copyright, 2015";
+        footer.appendChild(copyRightP);
+        // create p with text Copyright, 2015
+
+      // Main Stuff
 
     </script>
   </body>
 </html>
+
+
+
+<!-- <body>
+  <header>
+    <img src="images/acme-corp.jpg" alt="" width="200px" height="auto"/>
+    <nav>
+      <ul>
+        <li><a href="#">Product</a></li>
+        <li><button type="button" name="button">Sign Up</button></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section>
+      <h2>Welcome to ACME Corp!</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+      </p>
+      <p>
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+    </section>
+  </main>
+  <footer>
+    <p>
+      Copyright, 2015
+    </p>
+  </footer> -->
