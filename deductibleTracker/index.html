@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <style media="screen">
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+    path.slice{
+      stroke-width:2px;
+    }
+    </style>
+  </head>
+  <body>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script type="text/javascript">
+  //creating variables for sizing
+var      width = 960;
+var      height = 360
+  //create svg element
+  var svg = d3.select("body")
+  	.append("svg")
+    .attr({width:width,height:height})
+    .append("g")
+    //Note, just doing the slices for now
+    svg.append("g")
+    	.attr("class", "slices");
+      //math.min returns the smallest of either width or height I'm guestting
+  	radius = Math.min(width, height) / 2;
+
+//variables for pie chart-------------//
+  // The pie layout is a convenience for computing the start and end angles of arcs that comprise a pie or donut chart:
+  var pie = d3.layout.pie()
+    //disables sorting (not sure why) the order of the arcs will be the same as what I pass in
+  	.sort(null)
+    .startAngle(-135*(Math.PI/180))
+    .endAngle(90*(Math.PI/180))
+    //Specifies how to extract a value from the associated data might also give data that determines the size of the pie
+  	.value(function(d) {
+  		return d.value;
+  	});
+
+  var key = function(d){ return d.data.section; };
+  //creating inner arc
+  var arc = d3.svg.arc()
+  	.outerRadius(radius * 0.8)
+  	.innerRadius(radius * 0.4)
+    .padAngle(function(d) {
+      if (key(d)=="coinsurance") {
+        return 0.02
+
+      };
+      return 0;
+  	});
+
+  //creating outer arc
+  var outerArc = d3.svg.arc()
+  	.innerRadius(radius * 0.9)
+  	.outerRadius(radius * 0.9);
+
+  //centering the svg
+  svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+
+   ///---------------- Start the data dicing ------------------///
+
+  var theBarData =[
+    { "section": 'spendToDate', "value": 550, "color" : "blue"},
+    { "section": 'deductibleBar', "value": 1750, "color" : "grey"},
+    // { "section": 'deductibleBreak', "value": 80, "color" : "white"},
+    { "section": 'coinsurance', "value": 3700, "color" : "grey"},
+    ];
+
+
+
+  function drawBars (data){
+    /* ------- PIE SLICES -------*/
+    // a slice is = all the objects in the slice group which at this point is probably empty
+    var slice = svg.select(".slices")
+      .selectAll("path.slice")
+      // for each element in data get the start and end angles of that slice.
+      //
+      .data(pie(data), key);
+    //returns place holders for missing elements enter is for all the new data enter represents the new elements
+    //selecting new
+    slice.enter()
+      // I think insert is like append except it puts it above in the dom rather than under
+      // path is the type of element im creating
+      .insert("path")
+      // make the fill the color associated with that element of the data set
+      .style("fill", function(d) { return d.data.color; })
+      // make the path be slice
+      .attr("class", "slice");
+
+    slice.attr("d",function(d) {
+      return arc(d)
+    })
+
+  }
+  drawBars(theBarData);
+
+
+
+  </script>
+  </body>
+</html>
