@@ -31,7 +31,7 @@
         svg.append("g")
         	.attr("class", "slices");
         svg.append("g")
-          .attr("class", "labels");
+          .attr("class", "labelArcs");
 
       //centering the svg
       svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
@@ -65,7 +65,7 @@
           return 0;
         });
 
-      //creating outer arc for the labels
+      //creating outer arc for the labelArcs
       var labelArc = d3.svg.arc()
         .innerRadius(radius * 0.9)
         .outerRadius(radius * 0.9)
@@ -114,7 +114,7 @@
 
 
       /* ------- Draw the label Arcs -------*/
-      var slice = svg.select(".labels")
+      var slice = svg.select(".labelArcs")
         .selectAll("path.labelArc")
         // for each element in data get the start and end angles of that slice.
         //
@@ -128,7 +128,7 @@
         // make the fill the color associated with that element of the data set
         .style("stroke", function(d) { return d.data.color; })
         // make the path be slice
-        .attr("class", "labels");
+        .attr("class", "labelArcs");
 
       slice.attr("d",function(d) {
         return labelArc(d)
