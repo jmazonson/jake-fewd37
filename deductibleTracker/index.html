@@ -11,6 +11,10 @@
     path.slice{
       stroke-width:2px;
     }
+    path.labelArc{
+      stroke-width:2px;
+    }
+
     </style>
   </head>
   <body>
@@ -26,7 +30,8 @@
         //Note, just doing the slices for now
         svg.append("g")
         	.attr("class", "slices");
-          //math.min returns the smallest of either width or height I'm guestting
+        svg.append("g")
+          .attr("class", "labels");
 
       //centering the svg
       svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
@@ -46,13 +51,13 @@
 
       var key = function(d){ return d.data.section; };
 //---------------------Creating the Arcs-----------------------//
-      var deductiblePadding = 0.02;
+      var deductiblePadding = 0.1;
 
       //creating arc for the slices
       var arc = d3.svg.arc()
         .outerRadius(radius * 0.8)
         .innerRadius(radius * 0.6)
-        // set the padding spot
+        // set the padding between deductible and coinsurance
         .padAngle(function(d) {
           if (key(d)=="coinsurance") {
             return deductiblePadding;
@@ -63,18 +68,29 @@
       //creating outer arc for the labels
       var labelArc = d3.svg.arc()
         .innerRadius(radius * 0.9)
-        .outerRadius(radius * 0.9);
+        .outerRadius(radius * 0.9)
+        .padAngle(function(d) {
+          if (key(d)=="coinsurance") {
+            return deductiblePadding;
+          };
+          return 0;
+        });
 
 
      ///---------------- Start the data dicing ------------------///
       var theSliceData =[
-        { "section": 'spendToDate', "value": spendToDate, "color" : "blue"},
-        { "section": 'deductibleBar', "value": deductible, "color" : "grey"},
+        { "section": 'spendToDate', "value": spendToDate, "color" : "#275089"},
+        { "section": 'deductibleBar', "value": deductible-spendToDate, "color" : "#D5D5D5"},
         // { "section": 'deductibleBreak', "value": 80, "color" : "white"},
-        { "section": 'coinsurance', "value": coinsurance, "color" : "grey"},
+        { "section": 'coinsurance', "value": coinsurance, "color" : "#D5D5D5"},
         ];
 
-      /* ------- PIE SLICES -------*/
+      var theLabelData =[
+        { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19"},
+        { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD"},
+        ];
+
+      /* ------- Draw the PIE SLICES -------*/
       // a slice is = all the objects in the slice group which at this point is probably empty
       var slice = svg.select(".slices")
         .selectAll("path.slice")
@@ -96,7 +112,35 @@
         return arc(d)
       })
 
+
+      /* ------- Draw the label Arcs -------*/
+      var slice = svg.select(".labels")
+        .selectAll("path.labelArc")
+        // for each element in data get the start and end angles of that slice.
+        //
+        .data(pie(theLabelData), key);
+      //returns place holders for missing elements enter is for all the new data enter represents the new elements
+      //selecting new
+      slice.enter()
+        // I think insert is like append except it puts it above in the dom rather than under
+        // path is the type of element im creating
+        .insert("path")
+        // make the fill the color associated with that element of the data set
+        .style("stroke", function(d) { return d.data.color; })
+        // make the path be slice
+        .attr("class", "labels");
+
+      slice.attr("d",function(d) {
+        return labelArc(d)
+      })
+
+
+
+
   };
+
+
+
   drawDeductibleTracker(960,360,550,1750,3700);
 
 
