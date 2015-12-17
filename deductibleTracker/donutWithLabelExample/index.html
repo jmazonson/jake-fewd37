@@ -148,29 +148,42 @@ function change(data) {
 		return d.startAngle + (d.endAngle - d.startAngle)/2;
 	}
 
-	text.transition().duration(1000)
-		.attrTween("transform", function(d) {
-			this._current = this._current || d;
-			var interpolate = d3.interpolate(this._current, d);
-			this._current = interpolate(0);
-			return function(t) {
-				var d2 = interpolate(t);
-        // centroid is the middle of start angel end angle and the inner and outer radius this is getting the centroid based on the interpolated value
-				var pos = outerArc.centroid(d2);
-        // not sure what this math does but it is setting the initial position I think?
-				pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
-				return "translate("+ pos +")";
-			};
-		})
-		.styleTween("text-anchor", function(d){
-			this._current = this._current || d;
-			var interpolate = d3.interpolate(this._current, d);
-			this._current = interpolate(0);
-			return function(t) {
-				var d2 = interpolate(t);
-				return midAngle(d2) < Math.PI ? "start":"end";
-			};
-		});
+
+	// text.transition().duration(1000)
+	// 	.attrTween("transform", function(d) {
+	// 		this._current = this._current || d;
+	// 		var interpolate = d3.interpolate(this._current, d);
+	// 		this._current = interpolate(0);
+	// 		return function(t) {
+	// 			var d2 = interpolate(t);
+  //       // centroid is the middle of start angel end angle and the inner and outer radius this is getting the centroid based on the interpolated value
+	// 			var pos = outerArc.centroid(d2);
+  //       // this decides if it is on the left or the right and moves away
+	// 			 pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+	// 			return "translate("+ pos +")";
+	// 		};
+	// 	})
+  // //   //right justify if on the left side
+  //   .styleTween("text-anchor", function(d){
+	// 		this._current = this._current || d;
+	// 		var interpolate = d3.interpolate(this._current, d);
+	// 		this._current = interpolate(0);
+	// 		return function(t) {
+	// 			var d2 = interpolate(t);
+  //       console.log(midAngle(d2) < Math.PI ? "start":"end");
+	// 			return midAngle(d2) < Math.PI ? "start":"end";
+	// 		};
+	// 	});
+
+    text.attr("transform",function(d) {
+      pos = outerArc.centroid(d);
+      pos[0] = radius * (midAngle(d) < Math.PI ? 1 : -1);
+      return "translate("+ pos +")";
+    })
+    .style("text-anchor"), function(d){
+      // return midAngle(d) < Math.PI ? "start":"end";
+      return "end";
+      }
 
 	text.exit()
 		.remove();
