@@ -45,20 +45,23 @@
         });
 
       var key = function(d){ return d.data.section; };
-      //creating inner arc
+//---------------------Creating the Arcs-----------------------//
+      var deductiblePadding = 0.02;
+
+      //creating arc for the slices
       var arc = d3.svg.arc()
         .outerRadius(radius * 0.8)
-        .innerRadius(radius * 0.4)
+        .innerRadius(radius * 0.6)
+        // set the padding spot
         .padAngle(function(d) {
           if (key(d)=="coinsurance") {
-            return 0.02
-
+            return deductiblePadding;
           };
           return 0;
         });
 
-      //creating outer arc
-      var outerArc = d3.svg.arc()
+      //creating outer arc for the labels
+      var labelArc = d3.svg.arc()
         .innerRadius(radius * 0.9)
         .outerRadius(radius * 0.9);
 
