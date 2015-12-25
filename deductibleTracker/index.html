@@ -22,6 +22,12 @@
     path.labelArc{
       stroke-width:2px;
     }
+    polyline{
+    	opacity: .3;
+    	stroke: black;
+    	stroke-width: 2px;
+    	fill: none;
+    }
 
     </style>
   </head>
@@ -177,11 +183,11 @@
 
       /* ------- Draw the label TICKS -------*/
       var ticks = svg.select(".labelTicks")
-        selectAll("polyline.tick")
+        .selectAll("ticks")
         .data(pie(theLabelData), key);
-
-      polyline.tick.enter()
-        .append("ticks")
+      ticks.enter()
+        .append("polyline");
+      ticks.attr("points",[10,10,80,80])
 
 
 
