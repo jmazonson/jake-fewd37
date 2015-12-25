@@ -141,10 +141,11 @@
         .insert("path")
         // make the fill the color associated with that element of the data set
         .style("stroke", function(d) { return d.data.color; })
-        // make the path be slice
+        // make the path be slice class
         .attr("class", "labelArcs");
-
+        // set the draw atribute to what the label arc function returns
       slice.attr("d",function(d) {
+        //console.log(labelArc(d));
         return labelArc(d)
       })
 
@@ -165,14 +166,23 @@
     	}
       text.attr("transform",function(d) {
         pos = labelArc.centroid(d);
-        pos[0] = radius * (midAngle(d) < Math.PI ? 1 : -1);
+        pos[0] = radius * (midAngle(d) > (0) ? 1 : -1);
         return "translate("+ pos +")";
       })
-      .style("text-anchor"), function(d){
-        // return midAngle(d) < Math.PI ? "start":"end";
+      .style("text-anchor", function(d){
+        return midAngle(d) > 0 ? "start":"end";
+      })
 
-        return "end";
-        }
+
+
+      /* ------- Draw the label TICKS -------*/
+      var ticks = svg.select(".labelTicks")
+        selectAll("polyline.tick")
+        .data(pie(theLabelData), key);
+
+      polyline.tick.enter()
+        .append("ticks")
+
 
 
   };
