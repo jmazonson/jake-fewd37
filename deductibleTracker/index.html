@@ -182,12 +182,53 @@
 
 
       /* ------- Draw the label TICKS -------*/
+
+      var deductibleStartAngle = slice.data()[0]["startAngle"] * (180/Math.PI);
+      var deductibleEndAngle = slice.data()[0]["endAngle"]* (180/Math.PI)*-1;
+      //var deductibleStartAngle = 0;
+
+      function getPoint(theta,radius){
+        var Pos = [Math.cos(theta)*(radius * 0.9),
+                   Math.sin(theta)*(radius * 0.9)]
+        return Pos
+      }
+      var deductibleStartPoint = getPoint(deductibleStartAngle,radius);
+
+
       var ticks = svg.select(".labelTicks")
         .selectAll("ticks")
         .data(pie(theLabelData), key);
       ticks.enter()
-        .append("polyline");
-      ticks.attr("points",[10,10,80,80])
+        .append("polyline")
+        .attr("points",[deductibleStartPoint[0],deductibleStartPoint[1],0,0])
+
+        //Testing math for finding the point
+
+      var testRadius = 20;
+      var testRadian = 1;
+      var testTheta = testRadian * (180/Math.PI);
+      var testGetPoint = function getPoint(theta,radius){
+              var Pos = [Math.cos(theta)*(radius * 0.9),
+                         Math.sin(theta)*(radius * 0.9)]
+              return Pos
+            }
+      var testStartPoint = testGetPoint(testTheta,testRadius)
+      var circle = svg.append("circle")
+                               .attr("cx", 0)
+                               .attr("cy", 0)
+                               .attr("r", testRadius)
+                               .style("stroke","red")
+                               .style("fill","none");
+       var testLine = svg.append("polyline")
+                                .attr("points",[testStartPoint[0],testStartPoint[1],0,0]);
+                                // .attr("x1",0)
+                                // .attr("y1",0)
+                                // .attr("x2",20)
+                                // .attr("y2",20)
+                                // .style("stroke","red")
+
+
+
 
 
 
