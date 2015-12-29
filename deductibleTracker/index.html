@@ -72,7 +72,7 @@
       var key = function(d){ return d.data.section; };
 //---------------------Creating the Arcs-----------------------//
       var deductiblePadding = 0.1;
-
+      var labelRadiusAdjust = .9
       //creating arc for the slices
       var arc = d3.svg.arc()
         .outerRadius(radius * 0.8)
@@ -87,8 +87,8 @@
 
       //creating outer arc for the labelArcs
       var labelArc = d3.svg.arc()
-        .innerRadius(radius * 0.9)
-        .outerRadius(radius * 0.9)
+        .innerRadius(radius * labelRadiusAdjust)
+        .outerRadius(radius * labelRadiusAdjust)
         .padAngle(function(d) {
           if (key(d)=="coinsurance") {
             return deductiblePadding;
@@ -186,23 +186,26 @@
       var deductibleStartAngle = slice.data()[0]["startAngle"]*-1;
       var deductibleEndAngle = slice.data()[0]["endAngle"]*-1;
       //var deductibleStartAngle = 0;
+      var tickRadiusAdjust = 0.85;
+      function getTickPoints(theta,radius,labelRadiusAdjust){
+        var Pos = [Math.cos(theta)*(radius * labelRadiusAdjust),
+                   Math.sin(theta)*(radius * labelRadiusAdjust),
+                   Math.cos(theta)*(radius * tickRadiusAdjust),
+                   Math.sin(theta)*(radius * tickRadiusAdjust)]
 
-      function getPoint(theta,radius){
-        var Pos = [Math.cos(theta)*(radius * 0.9),
-                   Math.sin(theta)*(radius * 0.9)]
-        return Pos
+        return Pos;
       }
-
-
-      var deductibleStartPoint = getPoint(deductibleStartAngle,radius);
-
+      var deductibleStartPoints = getTickPoints(deductibleStartAngle,radius,labelRadiusAdjust);
 
       var ticks = svg.select(".labelTicks")
         .selectAll("ticks")
         .data(pie(theLabelData), key);
       ticks.enter()
         .append("polyline")
-        .attr("points",[deductibleStartPoint[0],deductibleStartPoint[1],0,0])
+        .attr("points",[deductibleStartPoints[0],
+                        deductibleStartPoints[1],
+                        deductibleStartPoints[2],
+                        deductibleStartPoints[3]])
 
 
 
@@ -218,30 +221,3 @@
   </script>
   </body>
 </html>
-
-
-
-//   //Testing math for finding the point
-//
-// var testRadius = 20;
-// var testRadian = 1;
-// var testTheta = 135*(Math.PI/180);
-// var testGetPoint = function getPoint(theta,radius){
-//         var Pos = [Math.cos(theta)*(radius * 0.9),
-//                    Math.sin(theta)*(radius * 0.9)]
-//         return Pos
-//       }
-// var testStartPoint = testGetPoint(testTheta,testRadius)
-// var circle = svg.append("circle")
-//                          .attr("cx", 0)
-//                          .attr("cy", 0)
-//                          .attr("r", testRadius)
-//                          .style("stroke","red")
-//                          .style("fill","none");
-//  var testLine = svg.append("polyline")
-//                           .attr("points",[testStartPoint[0],testStartPoint[1],0,0]);
-//                           // .attr("x1",0)
-//                           // .attr("y1",0)
-//                           // .attr("x2",20)
-//                           // .attr("y2",20)
-//                           // .style("stroke","red")
