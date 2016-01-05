@@ -59,10 +59,11 @@
       //variables for pie chart-------------//
       // The pie layout is a convenience for computing the start and end angles of arcs that comprise a pie or donut chart:
       var radius = Math.min(width, height) / 2;
+      var graphStartAngle = -135;
       var pie = d3.layout.pie()
         //disables sorting (not sure why) the order of the arcs will be the same as what I pass in
         .sort(null)
-        .startAngle(-135*(Math.PI/180))
+        .startAngle(graphStartAngle*(Math.PI/180))
         .endAngle(90*(Math.PI/180))
         //Specifies how to extract a value from the associated data might also give data that determines the size of the pie
         .value(function(d) {
@@ -109,6 +110,14 @@
         { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", label: "Deductible"},
         { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", label: "Coinsurance"},
         ];
+
+      // var theTickData = [
+      //   { "section": 'deductibleStartAngle', "value": deductible, "color" : "#F17F19", label: "Deductible"},
+      //   { "section": 'deductibleEndAngle', "value": deductible, "color" : "#F17F19", label: "Deductible"},
+      //   { "section": 'coinsuranceStartAngle', "value": coinsurance, "color" : "#56BFDD", label: "Coinsurance"},
+      //   { "section": 'coinsuranceEndAngle', "value": coinsurance, "color" : "#56BFDD", label: "Coinsurance"},
+      //   ];
+
 
       /* ------- Draw the PIE SLICES -------*/
       // a slice is = all the objects in the slice group which at this point is probably empty
@@ -183,11 +192,11 @@
 
       /* ------- Draw the label TICKS -------*/
 
-      var deductibleStartAngle = slice.data()[0]["startAngle"]*-1;
-      var deductibleEndAngle = slice.data()[0]["endAngle"]*-1;
+      var deductibleStartAngle = slice.data()[0]["startAngle"];
+      var deductibleEndAngle = slice.data()[0]["endAngle"];
       //var deductibleStartAngle = 0;
       var tickRadiusAdjust = 0.85;
-      function getTickPoints(theta,radius,labelRadiusAdjust){
+      function getTickPoints(theta){
         var Pos = [Math.cos(theta)*(radius * labelRadiusAdjust),
                    Math.sin(theta)*(radius * labelRadiusAdjust),
                    Math.cos(theta)*(radius * tickRadiusAdjust),
@@ -195,26 +204,27 @@
 
         return Pos;
       }
-      var deductibleStartPoints = getTickPoints(deductibleStartAngle,radius,labelRadiusAdjust);
-
       var ticks = svg.select(".labelTicks")
         .selectAll("ticks")
         .data(pie(theLabelData), key);
       ticks.enter()
         .append("polyline")
-        .attr("points",[deductibleStartPoints[0],
-                        deductibleStartPoints[1],
-                        deductibleStartPoints[2],
-                        deductibleStartPoints[3]])
+        .style("stroke", "#F17F19")
+        .attr("points", function (d) {
+          console.log(graphStartAngle*(Math.PI/180));
+          return getTickPoints(d["startAngle"]-graphStartAngle*(Math.PI/180));
+          })
+        // .attr("points", function (d) {
+        //   console.log(d);
+        //   console.log("drawing end tick");
+        //   debugger;
+        //   return getTickPoints(d["endAngle"]);
+        //   })
+  }
 
 
 
-
-  };
-
-
-
-  drawDeductibleTracker(960,360,550,1750,3700);
+  drawDeductibleTracker(520,360,550,1750,3700);
 
 
 
