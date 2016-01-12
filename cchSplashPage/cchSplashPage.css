@@ -1,9 +1,19 @@
 .h2Text{
   padding: 20px;
 }
+#cchButton{
+  color: #6bad44;
+  border: 2px solid #6bad44;
+}
+
 
 /* Custom, iPhone Retina */
   @media only screen and (min-width : 320px) and (max-width : 992px) {
+    #cchButton:active{
+      background: #6bad44;
+      color:#FFFFFF;
+    }
+
     .headerText{
       font-family: ProximaNova-Light;
       font-size: 4.5em;
@@ -19,7 +29,7 @@
       font-size: 3em;
       color: #4a4a4a;
       font-weight: 100;
-      width:80%;
+      width:100%;
       margin: auto;
       text-align: center;
     }
@@ -28,13 +38,12 @@
     }
 
     #products{
-      background-color: white;
     }
 
     .graphs{
       margin: 0 !important;
       padding: 0 !important;
-      z-index: 3;
+      z-index: -1;
       position: fixed;
       bottom: 0;
     }
@@ -50,9 +59,9 @@
       font-size: 2em;
       border: 2px solid #429CCB;
       color: #429CCB;
-      transition: all 0.3s ease 0s;
+      /*transition: all 0.3s ease 0s;*/
     }
-    .button:hover{
+    .button:active{
       background: #3cb0fd;
       color:#FFFFFF;
     }
@@ -103,7 +112,6 @@
 }
 
 #products{
-  background-color: white;
 }
 .productLogo{
   /*height: 80px;*/
@@ -111,7 +119,7 @@
 .graphs{
   margin: 0 !important;
   padding: 0 !important;
-  z-index: 3;
+  z-index: -1;
   position: absolute;
   bottom: -100px;
   /*height: 10%;*/
@@ -128,10 +136,14 @@
   font-size: 1em;
   border: 2px solid #429CCB;
   color: #429CCB;
-  transition: all 0.3s ease 0s;
+  /*transition: all 0.3s ease 0s;*/
 }
 .button:hover{
   background: #3cb0fd;
+  color:#FFFFFF;
+}
+#cchButton:hover{
+  background: #6bad44;
   color:#FFFFFF;
 }
 /*.graphContainer{
