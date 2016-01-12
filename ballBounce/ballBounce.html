@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style media="screen">
+      #theBall{
+        background-color: red;
+        height: 100px;
+        width: 100px;
+        border-radius: 100%;
+        position:fixed;
+        left: 30%;
+      }
+    .bounce{
+      animation-duration: 500ms;
+      animation-name: bounce;
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+    }
+    @keyframes bounce {
+      from {
+        transform: translate(0,300px);
+      }
+      to {
+        transform: translate(0,100px);
+      }
+    </style>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <div id = "theBall" class="bounce">
+
+    </div>
+
+  </body>
+</html>

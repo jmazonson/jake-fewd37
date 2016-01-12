@@ -3,7 +3,7 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
 	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="460 104 1440 313"
-	 enable-background="new 460 104 1440 313" xml:space="preserve">
+	 enable-background="new 460 104 1440 313" >
 <title>bottomGraphGrp</title>
 <desc>Created with Sketch.</desc>
 <g id="Page-1" sketch:type="MSPage">
@@ -12,23 +12,23 @@
 			<path id="bottomGraphPath_1_" sketch:type="MSShapeGroup" fill="#FFFFFF" stroke="#662D91" stroke-width="3" d="M460,431v-70.4
 				l570-106l233.5-5.2l222.5-36.8l89,3.8l95-13.8l381-98l6,348"/>
 			<g id="graphOval-Copy-12" transform="translate(565.000000, 146.000000)" sketch:type="MSShapeGroup">
-				
+
 					<ellipse id="Oval-1" fill="#D8D8D8" fill-opacity="0.42" stroke="#A0A0A0" stroke-width="2" stroke-opacity="0.5" cx="465" cy="109.3" rx="5" ry="5.3"/>
 			</g>
 			<g id="graphOval-Copy-14" transform="translate(1020.000000, 104.000000)" sketch:type="MSShapeGroup">
-				
+
 					<ellipse id="Oval-1_1_" fill="#D8D8D8" fill-opacity="0.42" stroke="#A0A0A0" stroke-width="2" stroke-opacity="0.5" cx="465" cy="109.3" rx="5" ry="5.3"/>
 			</g>
 			<g id="graphOval-Copy-15" transform="translate(1114.000000, 107.000000)" sketch:type="MSShapeGroup">
-				
+
 					<ellipse id="Oval-1_2_" fill="#D8D8D8" fill-opacity="0.42" stroke="#A0A0A0" stroke-width="2" stroke-opacity="0.5" cx="465" cy="109.3" rx="5" ry="5.3"/>
 			</g>
 			<g id="graphOval-Copy-16" transform="translate(1208.000000, 92.000000)" sketch:type="MSShapeGroup">
-				
+
 					<ellipse id="Oval-1_3_" fill="#D8D8D8" fill-opacity="0.42" stroke="#A0A0A0" stroke-width="2" stroke-opacity="0.5" cx="465" cy="109.3" rx="5" ry="5.3"/>
 			</g>
 			<g id="graphOval-Copy-13" transform="translate(799.000000, 140.000000)" sketch:type="MSShapeGroup">
-				
+
 					<ellipse id="Oval-1_4_" fill="#D8D8D8" fill-opacity="0.42" stroke="#A0A0A0" stroke-width="2" stroke-opacity="0.5" cx="465" cy="109.3" rx="5" ry="5.3"/>
 			</g>
 		</g>
