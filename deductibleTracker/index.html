@@ -23,10 +23,7 @@
       stroke-width:2px;
     }
     polyline{
-    	opacity: .3;
-    	stroke: black;
-    	stroke-width: 2px;
-    	fill: none;
+      stroke-width:1px;
     }
 
     </style>
@@ -160,7 +157,7 @@
         .attr("class", "labelArcs");
         // set the draw atribute to what the label arc function returns
       slice.attr("d",function(d) {
-        //console.log(labelArc(d));
+        //labelArc(d));
         return labelArc(d)
       })
 
@@ -204,16 +201,15 @@
 
         return Pos;
       }
-      var ticks = svg.select(".labelTicks")
-        .selectAll("ticks")
+      var ticks = svg.select(".labelTicks").selectAll("polyilne")
         .data(pie(theLabelData), key);
       ticks.enter()
         .append("polyline")
-        .style("stroke", "#F17F19")
-        .attr("points", function (d) {
-          console.log(graphStartAngle*(Math.PI/180));
-          return getTickPoints(d["startAngle"]-graphStartAngle*(Math.PI/180));
-          })
+        .style("stroke", function(d) { return d.data.color; })
+      ticks.attr("points", function (d) {
+        debugger
+        return getTickPoints(d["startAngle"]*-1);
+        })
         // .attr("points", function (d) {
         //   console.log(d);
         //   console.log("drawing end tick");

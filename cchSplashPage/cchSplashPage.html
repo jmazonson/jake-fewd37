@@ -1,0 +1,53 @@
+<!-- //splash page code html -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="cchSplashPage.css">
+    <meta charset="utf-8">
+    <title></title>
+    <h1 class = "headerText">Navigation and engagement powered by personalized data</h1>
+  </head>
+  <body>
+    <div class="container">
+      <div class = "row" id="products">
+        <div class = "col-sm-5 productGrp" id="cchGrp">
+          <img class = "productLogo" src="images/cchLogo.svg" alt="ClearCostLogo" />
+          <h2 class = "h2Text">Comparison Shopping for Health Care</h2>
+          <button class = "button" id="cchButton" type="button" name="StartShopping">Start Shopping</button>
+          <button class="btn btn-default" type="submit">Button</button>
+        </div>
+        <div class = "hidden-xs col-sm-2" id = "verticalDivider">
+          <?xml version="1.0"?>
+            <svg width="120" height="200"
+                 viewPort="0 0 120 200" version="1.1"
+                 xmlns="http://www.w3.org/2000/svg">
+
+                <line x1="60" y1="200"
+                      x2="60" y2="20"
+                      stroke="#A3A3A3"
+                      stroke-width="1"/>
+
+            </svg>
+            <!-- closing devider -->
+        </div>
+        <div class = "col-sm-5 productGrp" id="mpGrp">
+          <img class = "productLogo" src="images/mpLogo.svg" alt="Melting Point Logo" />
+          <h2 class = "h2Text">The HR and Benefits Navigation Platform</h2>
+          <div class = "buttonContainer">
+            <button class = "button" id="mpButton" type="button" name="LearnMore">Learn More</button>
+          </div>
+          <!-- closing mp group        -->
+        </div>
+        <!-- closing product group -->
+      </div>
+      <!--closing container-->
+    </div>
+    <img id = "topGraph" class = "graphs shadow" src="images/topGraphGrp.svg" alt="topGraph" />
+    <img id = "middleGraph" class = "graphs shadow" src="images/middleGraphGrp.svg" alt="topGraph" />
+    <img id = "bottomGraph" class = "graphs shadow" src="images/bottomGraphGrp.svg" alt="topGraph" />
+  </body>
+</html>
