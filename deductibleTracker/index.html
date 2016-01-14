@@ -131,7 +131,7 @@
           ];
 
 
-      /* ------- Draw the PIE SLICES -------*/
+  /* ------- Draw the PIE SLICES -------*/
       // a slice is = all the objects in the slice group which at this point is probably empty
       var slice = svg.select(".slices")
         .selectAll("path.slice")
@@ -200,15 +200,20 @@
         return midAngle(d) > 0 ? "start":"end";
       })
 
+      /* ------- Label Arc to Text polyline -------*/
+
+      var polyline = svg.select(".labelLines").selectAll("polyline")
+          .data(pie(theLabelData),key);
+
+      polyline.enter()
+        .append("polyline");
+      polyline.exit()
+        .remove();
 
 
       /* ------- Draw the label TICKS -------*/
 
-      var deductibleStartAngle = slice.data()[0]["startAngle"];
-      var deductibleEndAngle = slice.data()[0]["endAngle"];
-      //var deductibleStartAngle = 0;
-
-
+      //get the tick points by parsing through arc function
       function getStartTickPoints(data){
         var curveInfoString = tickArc(data);
         if (data.data.flag=="Start") {
@@ -224,10 +229,6 @@
           //parse end of arc points out of string
           //split string at commas into an array
           var newString=curveInfoString.split(",")
-          //get the 4th element split at slice(1) and save to points[0]
-          //split the 4th element at the L
-          //the first part of the split is [1] the second is [2]
-          //[3] is the 5th element
           tickpoints = [newString[3].slice(1),
                         newString[4].split("L")[0],
                         newString[4].split("L")[1],
@@ -239,8 +240,7 @@
         }
       }
 
-
-
+      //draw the ticks
       var ticks = svg.select(".labelTicks").selectAll("polyilne")
         .data(pie(theTickData));
       ticks.enter()
@@ -249,12 +249,6 @@
       ticks.attr("points", function (d) {
         return getStartTickPoints(d);
         })
-        // .attr("points", function (d) {
-        //   console.log(d);
-        //   console.log("drawing end tick");
-        //   debugger;
-        //   return getStartTickPoints(d[""]);
-        //   })
   }
 
 
