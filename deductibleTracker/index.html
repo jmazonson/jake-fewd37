@@ -193,6 +193,11 @@
       var deductibleEndAngle = slice.data()[0]["endAngle"];
       //var deductibleStartAngle = 0;
       var tickRadiusAdjust = 0.85;
+      function getTickPointsV2(data){
+        var curveInfoString = labelArc(data);
+        return curveInfoString;
+      }
+
       function getTickPoints(theta){
         var Pos = [Math.cos(theta)*(radius * labelRadiusAdjust),
                    Math.sin(theta)*(radius * labelRadiusAdjust),
@@ -208,6 +213,7 @@
         .style("stroke", function(d) { return d.data.color; })
       ticks.attr("points", function (d) {
         debugger
+        console.log(getTickPointsV2(d));
         return getTickPoints(d["startAngle"]*-1);
         })
         // .attr("points", function (d) {
@@ -227,3 +233,44 @@
   </script>
   </body>
 </html>
+
+
+
+<!-- ///////
+This is what I get
+labelArc(d)
+"M-114.55129855222073,114.55129855222069A162,162 0 0,1 -144.02374608968884,-74.16980896761729L-144.02374608968884,-74.16980896761729A162,162 0 0,0 -114.55129855222073,114.55129855222069Z"
+getTickPoints(d["startAngle"]*-1);
+This is what I want
+[-114.55129855222069, 114.5512985522207, -108.18733752154176, 108.18733752154178]
+This is how I get it
+
+string
+["M-114.55129855222073", "114.55129855222069A162", "162 0 0", "1 -144.02374608968884", "-74.16980896761729L-144.02374608968884", "-74.16980896761729A162", "162 0 0", "0 -114.55129855222073", "114.55129855222069Z"]
+string = string.slice(1)
+["114.55129855222069A162", "162 0 0", "1 -144.02374608968884", "-74.16980896761729L-144.02374608968884", "-74.16980896761729A162", "162 0 0", "0 -114.55129855222073", "114.55129855222069Z"]
+string
+["114.55129855222069A162", "162 0 0", "1 -144.02374608968884", "-74.16980896761729L-144.02374608968884", "-74.16980896761729A162", "162 0 0", "0 -114.55129855222073", "114.55129855222069Z"]
+string.type
+undefined
+string.type()
+VM1559:1 Uncaught TypeError: string.type is not a function(…)(anonymous function) @ VM1559:1InjectedScript._evaluateOn @ VM903:875InjectedScript._evaluateAndWrap @ VM903:808InjectedScript.evaluateOnCallFrame @ VM903:933(anonymous function) @ index.html:212a @ d3.v3.min.js:1(anonymous function) @ d3.v3.min.js:3Y @ d3.v3.min.js:1Aa.each @ d3.v3.min.js:3Aa.attr @ d3.v3.min.js:3drawDeductibleTracker @ index.html:210(anonymous function) @ index.html:224
+string
+["114.55129855222069A162", "162 0 0", "1 -144.02374608968884", "-74.16980896761729L-144.02374608968884", "-74.16980896761729A162", "162 0 0", "0 -114.55129855222073", "114.55129855222069Z"]
+xy = string[0]
+"114.55129855222069A162"
+xy
+"114.55129855222069A162"
+xy = [xy]
+["114.55129855222069A162"]
+string
+["114.55129855222069A162", "162 0 0", "1 -144.02374608968884", "-74.16980896761729L-144.02374608968884", "-74.16980896761729A162", "162 0 0", "0 -114.55129855222073", "114.55129855222069Z"]
+string[2]
+"1 -144.02374608968884"
+string[2].split(" ")
+["1", "-144.02374608968884"]
+xy[1] = string[2].split(" ")[1]
+"-144.02374608968884"
+xy
+["114.55129855222069A162", "-144.02374608968884"]
+-->
