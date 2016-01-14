@@ -70,12 +70,26 @@
       var key = function(d){ return d.data.section; };
 //---------------------Creating the Arcs-----------------------//
       var deductiblePadding = 0.1;
-      var labelRadiusAdjust = .9
+      var labelRadiusAdjust = .9;
+      // this is where I set the length of the tick mark
+      var tickRadiusAdjust = 0.85;
+
       //creating arc for the slices
       var arc = d3.svg.arc()
         .outerRadius(radius * 0.8)
         .innerRadius(radius * 0.6)
         // set the padding between deductible and coinsurance
+        .padAngle(function(d) {
+          if (key(d)=="coinsurance") {
+            return deductiblePadding;
+          };
+          return 0;
+        });
+
+      //arc points for tick marks
+      var tickArc = d3.svg.arc()
+        .innerRadius(radius * tickRadiusAdjust)
+        .outerRadius(radius * labelRadiusAdjust)
         .padAngle(function(d) {
           if (key(d)=="coinsurance") {
             return deductiblePadding;
@@ -192,9 +206,10 @@
       var deductibleStartAngle = slice.data()[0]["startAngle"];
       var deductibleEndAngle = slice.data()[0]["endAngle"];
       //var deductibleStartAngle = 0;
-      var tickRadiusAdjust = 0.85;
+
+
       function getTickPointsV2(data){
-        var curveInfoString = labelArc(data);
+        var curveInfoString = tickArc(data);
         //split string at commas into an array
         var newString=curveInfoString.split(",")
         //take the m off of the first entry
@@ -224,7 +239,6 @@
         .style("stroke", function(d) { return d.data.color; })
       ticks.attr("points", function (d) {
         console.log(getTickPointsV2(d));
-        return getTickPoints(d["startAngle"]*-1);
         })
         // .attr("points", function (d) {
         //   console.log(d);
