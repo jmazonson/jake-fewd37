@@ -195,7 +195,18 @@
       var tickRadiusAdjust = 0.85;
       function getTickPointsV2(data){
         var curveInfoString = labelArc(data);
-        return curveInfoString;
+        //split string at commas into an array
+        var newString=curveInfoString.split(",")
+        //take the m off of the first entry
+        xy = [newString[0].slice(1),newString[1]]
+        for (var i = 0; i < xy.length; i++) {
+          xy[i]=parseFloat(xy[i])
+        }
+
+
+        //
+
+        return xy;
       }
 
       function getTickPoints(theta){
@@ -212,7 +223,6 @@
         .append("polyline")
         .style("stroke", function(d) { return d.data.color; })
       ticks.attr("points", function (d) {
-        debugger
         console.log(getTickPointsV2(d));
         return getTickPoints(d["startAngle"]*-1);
         })
