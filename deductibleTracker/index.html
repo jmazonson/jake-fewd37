@@ -199,6 +199,7 @@
       .style("text-anchor", function(d){
         return midAngle(d) > 0 ? "start":"end";
       })
+      .style("color",function(d) { return d.data.color; })
 
       /* ------- Label Arc to Text polyline -------*/
 
@@ -207,6 +208,12 @@
 
       polyline.enter()
         .append("polyline");
+      polyline.attr("points",function(d){
+        pos = labelArc.centroid(d);
+        posText=[radius * (midAngle(d) > (0) ? 1 : -1),pos[1]];
+        return [labelArc.centroid(d),posText];
+      })
+      .style("stroke", function(d) { return d.data.color; })
       polyline.exit()
         .remove();
 
@@ -253,7 +260,7 @@
 
 
 
-  drawDeductibleTracker(520,360,550,1750,3700);
+  drawDeductibleTracker(520,360,550,1200,3700);
 
 
 
