@@ -31,7 +31,9 @@
   <body>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript">
-  function drawDeductibleTracker(width,height,spendToDate,deductible,coinsurance){
+  // function drawDeductibleTracker(width,height,spendToDate,deductible,coinsurance){
+   var width = 520;
+   var height = 360;
     //size SVG append to dom
       //create svg element
       var svg = d3.select("body")
@@ -53,82 +55,68 @@
       //centering the svg
       svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-      //variables for pie chart-------------//
-      // The pie layout is a convenience for computing the start and end angles of arcs that comprise a pie or donut chart:
-      var radius = Math.min(width, height) / 2;
-      var graphStartAngle = -135;
-      var pie = d3.layout.pie()
-        //disables sorting (not sure why) the order of the arcs will be the same as what I pass in
-        .sort(null)
-        .startAngle(graphStartAngle*(Math.PI/180))
-        .endAngle(90*(Math.PI/180))
-        //Specifies how to extract a value from the associated data might also give data that determines the size of the pie
-        .value(function(d) {
-          return d.value;
-        });
-      var key = function(d){ return d.data.section; };
+
+ ///---------------- Start the data dicing ------------------///
+
+
+
+  function updateGraph(data,width){
+    width = width;
+    //variables for pie chart-------------//
+    // The pie layout is a convenience for computing the start and end angles of arcs that comprise a pie or donut chart:
+    var radius = Math.min(width, height) / 2;
+    var graphStartAngle = -135;
+    var pie = d3.layout.pie()
+      //disables sorting (not sure why) the order of the arcs will be the same as what I pass in
+      .sort(null)
+      .startAngle(graphStartAngle*(Math.PI/180))
+      .endAngle(90*(Math.PI/180))
+      //Specifies how to extract a value from the associated data might also give data that determines the size of the pie
+      .value(function(d) {
+        return d.value;
+      });
+    var key = function(d){ return d.data.section; };
 
 
 //---------------------Creating the Arcs-----------------------//
-      var deductiblePadding = 0.1;
-      var labelRadiusAdjust = .9;
-      // this is where I set the length of the tick mark
-      var tickRadiusAdjust = 0.85;
+    var deductiblePadding = 0.1;
+    var labelRadiusAdjust = .9;
+    // this is where I set the length of the tick mark
+    var tickRadiusAdjust = 0.85;
 
-      //creating arc for the slices
-      var arc = d3.svg.arc()
-        .outerRadius(radius * 0.8)
-        .innerRadius(radius * 0.6)
-        // set the padding between deductible and coinsurance
-        .padAngle(function(d) {
-          if (key(d)=="coinsurance") {
-            return deductiblePadding;
-          };
-          return 0;
-        });
+    //creating arc for the slices
+    var arc = d3.svg.arc()
+      .outerRadius(radius * 0.8)
+      .innerRadius(radius * 0.6)
+      // set the padding between deductible and coinsurance
+      .padAngle(function(d) {
+        if (key(d)=="coinsurance") {
+          return deductiblePadding;
+        };
+        return 0;
+      });
 
-      //arc points for tick marks
-      var tickArc = d3.svg.arc()
-        .innerRadius(radius * tickRadiusAdjust)
-        .outerRadius(radius * labelRadiusAdjust)
-        .padAngle(function(d) {
-          if (key(d)=="coinsurance") {
-            return deductiblePadding;
-          };
-          return 0;
-        });
+    //arc points for tick marks
+    var tickArc = d3.svg.arc()
+      .innerRadius(radius * tickRadiusAdjust)
+      .outerRadius(radius * labelRadiusAdjust)
+      .padAngle(function(d) {
+        if (key(d)=="coinsurance") {
+          return deductiblePadding;
+        };
+        return 0;
+      });
 
-      //creating outer arc for the labelArcs
-      var labelArc = d3.svg.arc()
-        .innerRadius(radius * labelRadiusAdjust)
-        .outerRadius(radius * labelRadiusAdjust)
-        .padAngle(function(d) {
-          if (key(d)=="coinsurance") {
-            return deductiblePadding;
-          };
-          return 0;
-        });
-
-
- ///---------------- Start the data dicing ------------------///
-      var theSliceData =[
-        { "section": 'spendToDate', "value": spendToDate, "color" : "#275089"},
-        { "section": 'deductibleBar', "value": deductible-spendToDate, "color" : "#D5D5D5"},
-        // { "section": 'deductibleBreak', "value": 80, "color" : "white"},
-        { "section": 'coinsurance', "value": coinsurance, "color" : "#D5D5D5"},
-        ];
-
-      var theLabelData =[
-        { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", label: "Deductible"},
-        { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", label: "Coinsurance"},
-        ];
-
-        var theTickData =[
-          { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", "flag": "Start"},
-          { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", "flag": "End"},
-          { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", "flag": "Start"},
-          { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", "flag": "End"},
-          ];
+    //creating outer arc for the labelArcs
+    var labelArc = d3.svg.arc()
+      .innerRadius(radius * labelRadiusAdjust)
+      .outerRadius(radius * labelRadiusAdjust)
+      .padAngle(function(d) {
+        if (key(d)=="coinsurance") {
+          return deductiblePadding;
+        };
+        return 0;
+      });
 
 
   /* ------- Draw the PIE SLICES -------*/
@@ -137,7 +125,7 @@
         .selectAll("path.slice")
         // for each element in data get the start and end angles of that slice.
         //
-        .data(pie(theSliceData), key);
+        .data(pie(data.slices), key);
       //returns place holders for missing elements enter is for all the new data enter represents the new elements
       //selecting new
       slice.enter()
@@ -149,9 +137,21 @@
         // make the path be slice
         .attr("class", "slice");
 
-      slice.attr("d",function(d) {
-        return arc(d)
-      })
+      // slice.attr("d",function(d) {
+      //   return arc(d)
+      // })
+      slice.transition().duration(1000)
+      .attrTween("d", function(d) {
+        // this is a variable this is like
+  			this._current = this._current || d;
+  			var interpolate = d3.interpolate(this._current, d);
+  			this._current = interpolate(0);
+  			return function(t) {
+  				return arc(interpolate(t));
+  			};
+  		})
+  	slice.exit()
+  		.remove();
 
 
       /* ------- Draw the label Arcs -------*/
@@ -159,7 +159,7 @@
         .selectAll("path.labelArc")
         // for each element in data get the start and end angles of that slice.
         //
-        .data(pie(theLabelData), key);
+        .data(pie(data.labels), key);
       //returns place holders for missing elements enter is for all the new data enter represents the new elements
       //selecting new
       slice.enter()
@@ -179,7 +179,7 @@
       /* ------- Draw the label text -------*/
       var text = svg.select(".labelText")
         .selectAll("text")
-        .data(pie(theLabelData), key);
+        .data(pie(data.labels), key);
 
       text.enter()
     		.append("text")
@@ -204,7 +204,7 @@
       /* ------- Label Arc to Text polyline -------*/
 
       var polyline = svg.select(".labelLines").selectAll("polyline")
-          .data(pie(theLabelData),key);
+          .data(pie(data.labels),key);
 
       polyline.enter()
         .append("polyline");
@@ -249,18 +249,84 @@
 
       //draw the ticks
       var ticks = svg.select(".labelTicks").selectAll("polyilne")
-        .data(pie(theTickData));
+        .data(pie(data.ticks));
       ticks.enter()
         .append("polyline")
         .style("stroke", function(d) { return d.data.color; })
       ticks.attr("points", function (d) {
         return getStartTickPoints(d);
         })
-  }
+
+    /* ------- Draw the label TICKS -------*/
+    // draw a line that is y pixels below the bottom of the last slice
+    // and extends out x pixels.  Place right justified text
 
 
 
-  drawDeductibleTracker(520,360,550,1200,3700);
+    // allow ability to change data
+
+    }
+  // }
+
+
+
+  // drawDeductibleTracker(520,360,550,1200,3700);
+
+  var blank_data = {
+    slices: [
+      { "section": 'spendToDate', "value": 0, "color" : "#275089"},
+      { "section": 'deductibleBar', "value": 0, "color" : "#D5D5D5"},
+      // { "section": 'deductibleBreak', "value": 80, "color" : "white"},
+      { "section": 'coinsurance', "value": 0, "color" : "#D5D5D5"},
+    ],
+
+    labels: [
+      { "section": 'deductibleLabel', "value": 0, "color" : "#F17F19", label: "Deductible"},
+      { "section": 'coinsurance', "value": 0, "color" : "#56BFDD", label: "Coinsurance"},
+    ],
+
+    ticks: [
+      { "section": 'deductibleLabel', "value": 0, "color" : "#F17F19", "flag": "Start"},
+      { "section": 'deductibleLabel', "value": 0, "color" : "#F17F19", "flag": "End"},
+      { "section": 'coinsurance', "value": 0, "color" : "#56BFDD", "flag": "Start"},
+      { "section": 'coinsurance', "value": 0, "color" : "#56BFDD", "flag": "End"},
+    ]
+  };
+  var spendToDate=550
+  var deductible=1200
+  var coinsurance=3700
+
+  var data = {
+    slices: [
+      { "section": 'spendToDate', "value": spendToDate, "color" : "#275089"},
+      { "section": 'deductibleBar', "value": deductible-spendToDate, "color" : "#D5D5D5"},
+      // { "section": 'deductibleBreak', "value": 80, "color" : "white"},
+      { "section": 'coinsurance', "value": coinsurance, "color" : "#D5D5D5"},
+    ],
+
+    labels: [
+      { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", label: "Deductible"},
+      { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", label: "Coinsurance"},
+    ],
+
+    ticks: [
+      { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", "flag": "Start"},
+      { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", "flag": "End"},
+      { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", "flag": "Start"},
+      { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", "flag": "End"},
+    ]
+  };
+  updateGraph(blank_data,window.innerWidth/3);
+  updateGraph(data,window.innerWidth/3);
+
+
+  // //make graph responsive
+  // d3.select(window).on('resize', resize);
+  // function resize(){
+  //
+  //   updateGraph(data,window.innerWidth/3);
+  // }
+
 
 
 
