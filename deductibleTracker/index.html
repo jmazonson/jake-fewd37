@@ -28,6 +28,9 @@
     polyline{
       stroke-width:1px;
     }
+    .oopMaxText{
+      width:100px;
+    }
 
     </style>
   </head>
@@ -39,36 +42,38 @@
   // function drawDeductibleTracker(width,height,spendToDate,deductible,coinsurance){
    var width = 520;
    var height = 360;
-    //size SVG append to dom
-      //create svg element
-      var svg = d3.select("body")
-      	.append("svg")
-        .attr({width:width,height:height})
-        .append("g")
-        //Note, just doing the slices for now
-        svg.append("g")
-        	.attr("class", "slices");
-          svg.append("g")
-            .attr("class", "sliceShadows");
-        svg.append("g")
-          .attr("class", "labelArcs");
-        svg.append("g")
-        	.attr("class", "labelLines");
-        svg.append("g")
-          .attr("class", "labelText");
-        svg.append("g")
-          .attr("class", "labelTicks");
-        svg.append("g")
-          .attr("class", "oopMaxLine");
-        svg.append("g")
-          .attr("class", "oopMaxText");
-      //centering the svg
-      svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
- var div = d3.select("body")
-        .append("div")
-        .style("transform", "translate(" + width / 2 + "px," + height / 2 + "px)")
-        .style("position","absolute");
+   var div = d3.select("body")
+          .append("div")
+          .style("transform", "translate(" + width / 2 + "px," + height / 2 + "px)")
+          .style("position","absolute");
+    //size SVG append to dom
+    //create svg element
+    var svg = d3.select("body")
+    	.append("svg")
+      .attr({width:width,height:height})
+      .append("g")
+      //Note, just doing the slices for now
+      svg.append("g")
+      	.attr("class", "slices");
+        svg.append("g")
+          .attr("class", "sliceShadows");
+      svg.append("g")
+        .attr("class", "labelArcs");
+      svg.append("g")
+      	.attr("class", "labelLines");
+      svg.append("g")
+        .attr("class", "labelText");
+      svg.append("g")
+        .attr("class", "labelTicks");
+      svg.append("g")
+        .attr("class", "oopMaxLine");
+      svg.append("g")
+        .attr("class", "oopMaxText");
+    //centering the svg
+    svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+
 
 
  ///---------------- Start the data dicing ------------------///
@@ -222,15 +227,21 @@
       function midAngle(d){
     		return d.startAngle + (d.endAngle - d.startAngle)/2;
     	}
-      text.attr("transform",function(d) {
-        pos = labelArc.centroid(d);
-        pos[0] = radius * (midAngle(d) > (0) ? 1 : -1);
-        return "translate("+ pos +")";
+      text.attr("transform",function(d,i) {
+        var pos = getLabelTextPosition(d,i)
+
+        return "translate(" + pos[0] + "," + pos[1] + ")";
       })
       .style("text-anchor", function(d){
-        return midAngle(d) > 0 ? "start":"end";
+        return "middle"
       })
       .transition().duration(1000).style("opacity",1);
+
+      function getLabelTextPosition(d,i){
+        var yOffSet = -radius;
+        var xOffSet = (radius) * (i == 0 ? -1 : 1);
+        return [xOffSet,yOffSet]
+      }
 
       /* ------- Label Arc to Text polyline -------*/
 
@@ -239,12 +250,21 @@
 
       polyline.enter()
         .append("polyline");
-      polyline.attr("points",function(d){
-        pos = labelArc.centroid(d);
-        posText=[radius * (midAngle(d) > (0) ? 1 : -1),pos[1]];
-        return [labelArc.centroid(d),posText];
+      polyline.attr("points",function(d,i){
+        var pos = labelArc.centroid(d);
+        if (i==0) {
+          var posText = [getLabelTextPosition(d,i)[0],getLabelTextPosition(d,i)[1]+10];
+          var posMiddle =[posText[0],pos[1]]
+        }else {
+          var posText = [getLabelTextPosition(d,i)[0]-50,getLabelTextPosition(d,i)[1]];
+          var posMiddle =[pos[0],posText[1]]
+        }
+
+        //TODO:note come back to make this a concatenated string
+        return [labelArc.centroid(d),posMiddle,posText];
       })
       .style("stroke", function(d) { return d.data.color; })
+      .style("fill","none")
       polyline.exit()
         .remove();
 
@@ -326,76 +346,28 @@
                 getArcPoints(d)[3]+oopMaxLineYOffSet];
       }
       })
-    var oopMaxText = svg.select(".oopMaxText").selectAll("text")
+    var oopMaxText = div.selectAll("div")
       .data(pie(([data.slices[data.slices.length-1]])));
       oopMaxText.enter()
-        .append("text")
+        .append("div")
+        .classed("oopMaxText",true)
         .attr("dy", ".35em")
-        .text("Out Of Pocket")
-        .attr("transform",function (d) {
-          if (d.value!=0) {
-            return "translate("+getArcPoints(d)[2]+","+
-                    getArcPoints(d)[3]+oopMaxLineYOffSet+")";
-              }
-            })
+        .text("Out Of Pocket Maximum")
+      oopMaxText.style("transform",function (d) {
+        if (d.value!=0) {
+          return "translate("+getArcPoints(d)[2]+"px,"+
+                  (getArcPoints(d)[3]+oopMaxLineYOffSet)+"px)";
+            }
+          })
 
 
     // allow ability to change data
 
     }
-  // }
 
+  updateGraph(generateData(0,0,0),window.innerWidth/3);
 
-
-  // drawDeductibleTracker(520,360,550,1200,3700);
-
-  var blank_data = {
-    slices: [
-      { "section": 'spendToDate', "value": 0, "color" : "#275089"},
-      { "section": 'deductibleBar', "value": 0, "color" : "#D5D5D5"},
-      // { "section": 'deductibleBreak', "value": 80, "color" : "white"},
-      { "section": 'coinsurance', "value": 0, "color" : "#D5D5D5"},
-    ],
-
-    labels: [
-      { "section": 'deductibleLabel', "value": 0, "color" : "#F17F19", label: "Deductible"},
-      { "section": 'coinsurance', "value": 0, "color" : "#56BFDD", label: "Coinsurance"},
-    ],
-
-    ticks: [
-      { "section": 'deductibleLabel', "value": 0, "color" : "#F17F19", "flag": "Start"},
-      { "section": 'deductibleLabel', "value": 0, "color" : "#F17F19", "flag": "End"},
-      { "section": 'coinsurance', "value": 0, "color" : "#56BFDD", "flag": "Start"},
-      { "section": 'coinsurance', "value": 0, "color" : "#56BFDD", "flag": "End"},
-    ]
-  };
-  var spendToDate=550
-  var deductible=1200
-  var coinsurance=3700
-
-  var data = {
-    slices: [
-      { "section": 'spendToDate', "value": spendToDate, "color" : "#275089"},
-      { "section": 'deductibleBar', "value": deductible-spendToDate, "color" : "#D5D5D5"},
-      // { "section": 'deductibleBreak', "value": 80, "color" : "white"},
-      { "section": 'coinsurance', "value": coinsurance, "color" : "#D5D5D5"},
-    ],
-
-    labels: [
-      { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", label: "Deductible"},
-      { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", label: "Coinsurance"},
-    ],
-
-    ticks: [
-      { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", "flag": "Start"},
-      { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", "flag": "End"},
-      { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", "flag": "Start"},
-      { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", "flag": "End"},
-    ]
-  };
-  updateGraph(blank_data,window.innerWidth/3);
-
-
+  var data = generateData(550, 1200, 3700);
 
   //make graph responsive
   d3.select(window).on('resize', resize);
@@ -403,13 +375,74 @@
 
     updateGraph(data,window.innerWidth/3);
   }
+
+
   setTimeout(function() {   //calls click event after a certain time
-     updateGraph(data,window.innerWidth/3);
-  }, 100);
+    updateGraph(data, window.innerWidth / 3);
+  }, 0);
 
 
 
 
+
+
+
+
+
+  function generateData(spendToDate, deductible, coinsurance) {
+    return {
+      slices: [
+        { "section": 'spendToDate', "value": spendToDate, "color" : "#275089"},
+        { "section": 'deductibleBar', "value": deductible-spendToDate, "color" : "#D5D5D5"},
+        // { "section": 'deductibleBreak', "value": 80, "color" : "white"},
+        { "section": 'coinsurance', "value": coinsurance, "color" : "#D5D5D5"},
+      ],
+
+      labels: [
+        { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", label: "Deductible"},
+        { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", label: "Coinsurance"},
+      ],
+
+      ticks: [
+        { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", "flag": "Start"},
+        { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", "flag": "End"},
+        { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", "flag": "Start"},
+        { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", "flag": "End"},
+      ]
+    };
+  }
+
+  function random(min, max) {
+    return min + Math.floor(Math.random() * (max - min + 1));
+  }
+  // setInterval(function() {   //calls click event after a certain time
+  //   var spendToDate = random(300, 800);
+  //   var deductible = random(500, 2000);
+  //   var coinsurance = random(3000, 5000);
+  //   spendToDate = spendToDate > deductible ? deductible : spendToDate;
+  //   updateGraph(generateData(spendToDate, deductible, coinsurance), window.innerWidth / 3);
+  // }, 3000);
+
+
+
+  $(function () {
+    $("#deductible, #coinsurance, #spend-to-date")
+      .change(function () {
+        var spendToDate = $("#spend-to-date").val();
+        var deductible = $("#deductible").val();
+        var coinsurance = $("#coinsurance").val();
+        updateGraph(generateData(spendToDate, deductible, coinsurance), window.innerWidth / 3);
+      });
+  });
   </script>
+  <label>
+    Deductible <input type="number" id="deductible" step="100" value="1200" />
+  </label>
+  <label>
+    Coinsurance <input type="number" id="coinsurance" step="100" value="3700" />
+  </label>
+  <label>
+    Spend to date <input type="number" id="spend-to-date" step="100" value="550" />
+  </label>
   </body>
 </html>
