@@ -17,13 +17,13 @@
       height: 100%;
     }
     path.slice{
-      stroke-width:2px;
+      stroke-width:1px;
     }
     path.sliceShadows{
-      stroke-width:2px;
+      stroke-width:1px;
     }
     path.labelArc{
-      stroke-width:2px;
+      stroke-width:1px;
     }
     polyline{
       stroke-width:1px;
@@ -64,6 +64,11 @@
           .attr("class", "oopMaxText");
       //centering the svg
       svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+ var div = d3.select("body")
+        .append("div")
+        .style("transform", "translate(" + width / 2 + "px," + height / 2 + "px)")
+        .style("position","absolute");
 
 
  ///---------------- Start the data dicing ------------------///
@@ -173,41 +178,7 @@
   		})
     	slice.exit()
     		.remove();
-      //
-      // /* ------- Draw Slice Shadows -------*/
-      //     // a slice is = all the objects in the slice group which at this point is probably empty
-      //     var sliceShadow = svg.select(".sliceShadows")
-      //       .selectAll("path.sliceShadows")
-      //       // for each element in data get the start and end angles of that slice.
-      //       //
-      //       .data(pie(data.slices), key);
-      //     //returns place holders for missing elements enter is for all the new data enter represents the new elements
-      //     //selecting new
-      //     sliceShadow.enter()
-      //       // I think insert is like append except it puts it above in the dom rather than under
-      //       // path is the type of element im creating
-      //       .insert("path")
-      //       // make the fill the color associated with that element of the data set
-      //       .style("fill", function(d) { return d.data.color; })
-      //       // make the path be slice
-      //       .attr("class", "slice");
-      //
-      //     // slice.attr("d",function(d) {
-      //     //   return arc(d)
-      //     // })
-      //     sliceShadow.transition().duration(1000)
-      //     .attrTween("d", function(d) {
-      //       // this is a variable this is like
-      // 			this._current = this._current || d;
-      // 			var interpolate = d3.interpolate(this._current, d);
-      // 			this._current = interpolate(0);
-      // 			return function(t) {
-      // 				return arcShadow(interpolate(t));
-      // 			};
-      // 		})
-      // 	sliceShadow.exit()
-      // 		.remove();
-      //
+
 
 
       /* ------- Draw the label Arcs -------*/
@@ -215,7 +186,7 @@
         .selectAll("path.labelArc")
         // for each element in data get the start and end angles of that labelSlice.
         //
-        .data(pie(data.labels));
+        .data(pie(data.labels), key);
       //returns place holders for missing elements enter is for all the new data enter represents the new elements
       //selecting new
       labelSlice.enter()
@@ -225,7 +196,7 @@
         // make the fill the color associated with that element of the data set
         .style("stroke", function(d) { return d.data.color; })
         // make the path be labelSlice class
-        .attr("class", "labelArcs");
+        .attr("class", "labelArc");
         // set the draw atribute to what the label arc function returns
       labelSlice.attr("d",function(d) {
         //labelArc(d));
@@ -251,8 +222,7 @@
       function midAngle(d){
     		return d.startAngle + (d.endAngle - d.startAngle)/2;
     	}
-      text.transition().duration(1000)
-      .attr("transform",function(d) {
+      text.attr("transform",function(d) {
         pos = labelArc.centroid(d);
         pos[0] = radius * (midAngle(d) > (0) ? 1 : -1);
         return "translate("+ pos +")";
@@ -260,7 +230,7 @@
       .style("text-anchor", function(d){
         return midAngle(d) > 0 ? "start":"end";
       })
-      .style("opacity",1);
+      .transition().duration(1000).style("opacity",1);
 
       /* ------- Label Arc to Text polyline -------*/
 
@@ -368,11 +338,6 @@
                     getArcPoints(d)[3]+oopMaxLineYOffSet+")";
               }
             })
-      text.attr("transform",function(d) {
-        pos = labelArc.centroid(d);
-        pos[0] = radius * (midAngle(d) > (0) ? 1 : -1);
-        return "translate("+ pos +")";
-      })
 
 
     // allow ability to change data
