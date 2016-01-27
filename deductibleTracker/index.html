@@ -6,7 +6,7 @@
     <style media="screen">
 
     body {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-family: "Lato-Light", Helvetica, Arial, sans-serif;
       width: 960px;
       height: 500px;
       position: relative;
@@ -19,6 +19,9 @@
     path.slice{
       stroke-width:2px;
     }
+    path.sliceShadows{
+      stroke-width:2px;
+    }
     path.labelArc{
       stroke-width:2px;
     }
@@ -29,7 +32,9 @@
     </style>
   </head>
   <body>
-  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
+  <script src="../../codeLibraries/d3/d3.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <script type="text/javascript">
   // function drawDeductibleTracker(width,height,spendToDate,deductible,coinsurance){
    var width = 520;
@@ -43,6 +48,8 @@
         //Note, just doing the slices for now
         svg.append("g")
         	.attr("class", "slices");
+          svg.append("g")
+            .attr("class", "sliceShadows");
         svg.append("g")
           .attr("class", "labelArcs");
         svg.append("g")
@@ -51,7 +58,10 @@
           .attr("class", "labelText");
         svg.append("g")
           .attr("class", "labelTicks");
-
+        svg.append("g")
+          .attr("class", "oopMaxLine");
+        svg.append("g")
+          .attr("class", "oopMaxText");
       //centering the svg
       svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
@@ -95,6 +105,17 @@
         };
         return 0;
       });
+
+      var arcShadow = d3.svg.arc()
+        .outerRadius(radius * 0.6)
+        .innerRadius(radius * 0.55)
+        // set the padding between deductible and coinsurance
+        .padAngle(function(d) {
+          if (key(d)=="coinsurance") {
+            return deductiblePadding;
+          };
+          return 0;
+        });
 
     //arc points for tick marks
     var tickArc = d3.svg.arc()
@@ -150,31 +171,68 @@
   				return arc(interpolate(t));
   			};
   		})
-  	slice.exit()
-  		.remove();
+    	slice.exit()
+    		.remove();
+      //
+      // /* ------- Draw Slice Shadows -------*/
+      //     // a slice is = all the objects in the slice group which at this point is probably empty
+      //     var sliceShadow = svg.select(".sliceShadows")
+      //       .selectAll("path.sliceShadows")
+      //       // for each element in data get the start and end angles of that slice.
+      //       //
+      //       .data(pie(data.slices), key);
+      //     //returns place holders for missing elements enter is for all the new data enter represents the new elements
+      //     //selecting new
+      //     sliceShadow.enter()
+      //       // I think insert is like append except it puts it above in the dom rather than under
+      //       // path is the type of element im creating
+      //       .insert("path")
+      //       // make the fill the color associated with that element of the data set
+      //       .style("fill", function(d) { return d.data.color; })
+      //       // make the path be slice
+      //       .attr("class", "slice");
+      //
+      //     // slice.attr("d",function(d) {
+      //     //   return arc(d)
+      //     // })
+      //     sliceShadow.transition().duration(1000)
+      //     .attrTween("d", function(d) {
+      //       // this is a variable this is like
+      // 			this._current = this._current || d;
+      // 			var interpolate = d3.interpolate(this._current, d);
+      // 			this._current = interpolate(0);
+      // 			return function(t) {
+      // 				return arcShadow(interpolate(t));
+      // 			};
+      // 		})
+      // 	sliceShadow.exit()
+      // 		.remove();
+      //
 
 
       /* ------- Draw the label Arcs -------*/
-      var slice = svg.select(".labelArcs")
+      var labelSlice = svg.select(".labelArcs")
         .selectAll("path.labelArc")
-        // for each element in data get the start and end angles of that slice.
+        // for each element in data get the start and end angles of that labelSlice.
         //
-        .data(pie(data.labels), key);
+        .data(pie(data.labels));
       //returns place holders for missing elements enter is for all the new data enter represents the new elements
       //selecting new
-      slice.enter()
+      labelSlice.enter()
         // I think insert is like append except it puts it above in the dom rather than under
         // path is the type of element im creating
         .insert("path")
         // make the fill the color associated with that element of the data set
         .style("stroke", function(d) { return d.data.color; })
-        // make the path be slice class
+        // make the path be labelSlice class
         .attr("class", "labelArcs");
         // set the draw atribute to what the label arc function returns
-      slice.attr("d",function(d) {
+      labelSlice.attr("d",function(d) {
         //labelArc(d));
         return labelArc(d)
       })
+      labelSlice.exit()
+        .remove();
 
       /* ------- Draw the label text -------*/
       var text = svg.select(".labelText")
@@ -184,6 +242,8 @@
       text.enter()
     		.append("text")
     		.attr("dy", ".35em")
+        .style("fill",function(d) { return d.data.color; })
+        .style("opacity",0)
     		.text(function(d) {
     			return d.data.label;
     		});
@@ -191,7 +251,8 @@
       function midAngle(d){
     		return d.startAngle + (d.endAngle - d.startAngle)/2;
     	}
-      text.attr("transform",function(d) {
+      text.transition().duration(1000)
+      .attr("transform",function(d) {
         pos = labelArc.centroid(d);
         pos[0] = radius * (midAngle(d) > (0) ? 1 : -1);
         return "translate("+ pos +")";
@@ -199,7 +260,7 @@
       .style("text-anchor", function(d){
         return midAngle(d) > 0 ? "start":"end";
       })
-      .style("color",function(d) { return d.data.color; })
+      .style("opacity",1);
 
       /* ------- Label Arc to Text polyline -------*/
 
@@ -221,46 +282,97 @@
       /* ------- Draw the label TICKS -------*/
 
       //get the tick points by parsing through arc function
-      function getStartTickPoints(data){
-        var curveInfoString = tickArc(data);
-        if (data.data.flag=="Start") {
-          //split string at commas into an array
-          var newString=curveInfoString.split(",")
-          //take the m off of the first entry
-          tickPoints = [newString[0].slice(1),newString[1],newString[7].slice(1),newString[8]]
-          for (var i = 0; i < tickPoints.length; i++) {
-            tickPoints[i]=parseFloat(tickPoints[i])
+      function getTickPoints(data){
+        var labelCurveInfoString = tickArc(data);
+        var newString=labelCurveInfoString.split(",")
+        if (newString.length > 7 ) {
+          if (data.data.flag=="Start"){
+            //split string at commas into an array
+            var newString=labelCurveInfoString.split(",")
+            //take the m off of the first entry
+            tickPoints = [newString[0].slice(1),newString[1],newString[7].slice(1),newString[8]]
+            for (var i = 0; i < tickPoints.length; i++) {
+              tickPoints[i]=parseFloat(tickPoints[i])
+            }
+            return tickPoints;
+          }else {
+            //parse end of arc points out of string
+            //split string at commas into an array
+            var newString=labelCurveInfoString.split(",")
+            tickpoints = [newString[3].slice(1),
+                          newString[4].split("L")[0],
+                          newString[4].split("L")[1],
+                          newString[5].split("A")[0]]
+            for (var i = 0; i < tickPoints.length; i++) {
+              tickPoints[i]=parseFloat(tickPoints[i])
+            }
+            return tickpoints;
           }
-          return tickPoints;
-        }else {
-          //parse end of arc points out of string
-          //split string at commas into an array
-          var newString=curveInfoString.split(",")
-          tickpoints = [newString[3].slice(1),
-                        newString[4].split("L")[0],
-                        newString[4].split("L")[1],
-                        newString[5].split("A")[0]]
-          for (var i = 0; i < tickPoints.length; i++) {
-            tickPoints[i]=parseFloat(tickPoints[i])
-          }
-          return tickpoints;
         }
       }
 
+      function getArcPoints(data){
+        var sliceCurveInfoString = arc(data);
+        var newString=sliceCurveInfoString.split(",")
+        arcPoints = [newString[2].split(" ")[0],// split at comma, 1st x value [2] with everything before the space
+                      newString[4].split("L")[0],
+                      newString[4].split("L")[1],
+                      newString[4].split("L")[0]]
+        for (var i = 0; i < arcPoints.length; i++) {
+          arcPoints[i]=parseFloat(arcPoints[i])
+        }
+
+        return arcPoints;
+          }
+
       //draw the ticks
-      var ticks = svg.select(".labelTicks").selectAll("polyilne")
+      var ticks = svg.select(".labelTicks").selectAll("polyline")
         .data(pie(data.ticks));
       ticks.enter()
         .append("polyline")
         .style("stroke", function(d) { return d.data.color; })
       ticks.attr("points", function (d) {
-        return getStartTickPoints(d);
+        return getTickPoints(d);
         })
+        polyline.exit()
+          .remove();
 
-    /* ------- Draw the label TICKS -------*/
+    /* ------- Draw the OOP max label-------*/
     // draw a line that is y pixels below the bottom of the last slice
-    // and extends out x pixels.  Place right justified text
-
+    // and extends out x pixels.  Place right justified text below that
+    // .data([data.ticks[data.ticks.length-1]])
+    var oopMaxLineXOffSet = 40
+    var oopMaxLineYOffSet = 5
+    var oopMaxLine = svg.select(".oopMaxLine").selectAll("polyline")
+      .data(pie(([data.slices[data.slices.length-1]])));
+    oopMaxLine.enter()
+      .append("polyline")
+      .style("stroke", "#8E8E8E")
+    oopMaxLine.attr("points", function (d) {
+      if (d.value!=0) {
+        return [getArcPoints(d)[0]+oopMaxLineXOffSet,
+                getArcPoints(d)[1]+oopMaxLineYOffSet,
+                getArcPoints(d)[2],
+                getArcPoints(d)[3]+oopMaxLineYOffSet];
+      }
+      })
+    var oopMaxText = svg.select(".oopMaxText").selectAll("text")
+      .data(pie(([data.slices[data.slices.length-1]])));
+      oopMaxText.enter()
+        .append("text")
+        .attr("dy", ".35em")
+        .text("Out Of Pocket")
+        .attr("transform",function (d) {
+          if (d.value!=0) {
+            return "translate("+getArcPoints(d)[2]+","+
+                    getArcPoints(d)[3]+oopMaxLineYOffSet+")";
+              }
+            })
+      text.attr("transform",function(d) {
+        pos = labelArc.centroid(d);
+        pos[0] = radius * (midAngle(d) > (0) ? 1 : -1);
+        return "translate("+ pos +")";
+      })
 
 
     // allow ability to change data
@@ -317,15 +429,18 @@
     ]
   };
   updateGraph(blank_data,window.innerWidth/3);
-  updateGraph(data,window.innerWidth/3);
 
 
-  // //make graph responsive
-  // d3.select(window).on('resize', resize);
-  // function resize(){
-  //
-  //   updateGraph(data,window.innerWidth/3);
-  // }
+
+  //make graph responsive
+  d3.select(window).on('resize', resize);
+  function resize(){
+
+    updateGraph(data,window.innerWidth/3);
+  }
+  setTimeout(function() {   //calls click event after a certain time
+     updateGraph(data,window.innerWidth/3);
+  }, 100);
 
 
 
