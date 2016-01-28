@@ -8,8 +8,15 @@
     body {
       font-family: "Lato-Light", Helvetica, Arial, sans-serif;
       width: 960px;
-      height: 500px;
+      height: 400px;
       position: relative;
+    }
+
+    h1{
+      font-family: "Lato-Light", Helvetica, Arial, sans-serif;
+      text-align: center;
+      margin: auto;
+      width: 520px;
     }
 
     svg {
@@ -37,26 +44,27 @@
     }
     .spendToDateMoneyCounter{
       font-family: "Lato-Light", Helvetica, Arial, sans-serif;
-      font-size: 2em;
+      font-size: 3em;
     }
 
     </style>
   </head>
   <body>
   <script src="http://d3js.org/d3.v3.min.js"></script>
-  <!-- <script src="../../codeLibraries/d3/d3.min.js"></script> -->
+  <script src="../../codeLibraries/d3/d3.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <script type="text/javascript">
   // function drawDeductibleTracker(width,height,spendToDate,deductible,coinsurance){
    var width = 520;
    var height = 360;
 
-   var div = d3.select("body")
+   var spendToDateDiv = d3.select("body")
           .append("div")
           .classed("spendToDateDiv",true)
-          .style("transform", "translate(" + width / 2 + "px," + height / 2 + "px)")
+          //TODO get a way to find the middle of this
+          .style("transform", "translate(" + ((width / 2 ) -45 ) + "px," + ((height / 2) +10) + "px)")
           .style("position","absolute");
-   var div = d3.select("body")
+   var oopMaxDiv = d3.select("body")
           .append("div")
           .classed("oopMaxDiv",true)
           .style("transform", "translate(" + width / 2 + "px," + height / 2 + "px)")
@@ -370,7 +378,7 @@
       })
     oopMaxLine.transition().duration(1000).style("opacity",1);
 
-    var oopMaxText = div.selectAll("div")
+    var oopMaxText = oopMaxDiv.selectAll("div")
       .data(pie(([data.slices[data.slices.length-1]])));
       oopMaxText.enter()
         .append("div")
@@ -386,7 +394,6 @@
           })
       oopMaxText.transition().duration(1000).style("opacity",1);
 
-
   /* ------- Draw the Spend to date counter-------*/
     var spendToDateMoneyCounter = svg.select(".spendToDateMoneyCounter").selectAll("text")
       .data(data.slices);
@@ -397,13 +404,23 @@
         .style("opacity",0)
         .style("fill","#275089");
       //TODO having this conditional seems messy
-      spendToDateMoneyCounter.transition().duration(100000).text(function(d,i){if (i == 0){return "$"+d.value}});
+      spendToDateMoneyCounter.text(function(d,i){if (i == 0){return "$"+d.value}});
+      //   var counter = 1;
+      //   var interval = setInterval(function(){
+      //     spendToDateMoneyCounter.text('$'+counter);
+      //     counter += 1;
+      //     if (counter > d.value) {
+      //       clearInterval(interval);
+      //     }
+      //   },1);
+      //   return "$0";
+      // }});
       spendToDateMoneyCounter.transition().duration(1000).style("opacity",1);
       // spendToDateMoneyCounter.transition().duration(1000).text(function(d,i){return d.value});
 
 
   /* ------- Draw the Spend to date label-------*/
-      var spendToDateText = div.select(".spendToDateDiv").selectAll("div")
+      var spendToDateText = spendToDateDiv.selectAll("div")
         .data([data.slices[0]]);
         spendToDateText.enter()
           .append("div")
@@ -411,6 +428,7 @@
           .attr("dy", ".35em")
           .text("Spent to date this year")
           .style("opacity","0")
+          .style("text-align","center")
         spendToDateText.style("transform","0")
         spendToDateText.transition().duration(1000).style("opacity",1);
   //   // allow ability to change data
