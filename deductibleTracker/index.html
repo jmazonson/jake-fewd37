@@ -3,53 +3,9 @@
   <head>
     <meta charset="utf-8">
     <title></title>
-    <style media="screen">
-
-    body {
-      font-family: "Lato-Light", Helvetica, Arial, sans-serif;
-      width: 960px;
-      height: 400px;
-      position: relative;
-    }
-
-    h1{
-      font-family: "Lato-Light", Helvetica, Arial, sans-serif;
-      text-align: center;
-      margin: auto;
-      width: 520px;
-    }
-
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-    path.slice{
-      stroke-width:1px;
-    }
-    path.sliceShadows{
-      stroke-width:1px;
-    }
-    path.labelArc{
-      stroke-width:1px;
-    }
-    polyline{
-      stroke-width:1px;
-    }
-    .oopMaxText{
-      width:100px;
-    }
-    .spendToDateText{
-      width:100px;
-      text-align: center;
-    }
-    .spendToDateMoneyCounter{
-      font-family: "Lato-Light", Helvetica, Arial, sans-serif;
-      font-size: 3em;
-    }
-
-    </style>
+    <link rel="stylesheet" href="deductibleTracker.css" media="screen">
+    debugger
   </head>
-  <body>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="../../codeLibraries/d3/d3.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
@@ -235,6 +191,11 @@
       labelSlice.exit()
         .remove();
 
+        function fadeIn (selection) {
+          selection.style("opacity",0);
+          selection.transition().duration(1000).style("opacity",1);
+        }
+
       /* ------- Draw the label text -------*/
       var text = svg.select(".labelText")
         .selectAll("text")
@@ -419,7 +380,7 @@
       // spendToDateMoneyCounter.transition().duration(1000).text(function(d,i){return d.value});
 
 
-  /* ------- Draw the Spend to date label-------*/
+
       var spendToDateText = spendToDateDiv.selectAll("div")
         .data([data.slices[0]]);
         spendToDateText.enter()
@@ -452,13 +413,6 @@
   }, 0);
 
 
-
-
-
-
-
-
-
   function generateData(spendToDate, deductible, coinsurance) {
     return {
       slices: [
@@ -482,9 +436,10 @@
     };
   }
 
-  function random(min, max) {
-    return min + Math.floor(Math.random() * (max - min + 1));
-  }
+  /* ------- Code for creating random data at intervals-------*/
+  // function random(min, max) {
+  //   return min + Math.floor(Math.random() * (max - min + 1));
+  // }
   // setInterval(function() {   //calls click event after a certain time
   //   var spendToDate = random(300, 800);
   //   var deductible = random(500, 2000);
@@ -492,8 +447,6 @@
   //   spendToDate = spendToDate > deductible ? deductible : spendToDate;
   //   updateGraph(generateData(spendToDate, deductible, coinsurance), window.innerWidth / 3);
   // }, 3000);
-
-
 
   $(function () {
     $("#deductible, #coinsurance, #spend-to-date")
