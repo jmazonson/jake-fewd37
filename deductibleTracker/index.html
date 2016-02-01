@@ -17,7 +17,7 @@ var height = 360;
 
 
 oopMaxDiv = appendDivCompenentGrpToParent("body","oopMaxDiv",[width/2,height/2])
-spendToDateDiv = appendDivCompenentGrpToParent("body","oopMaxDiv",[((width / 2 ) -45 ),((height / 2) +10)])
+spendToDateDiv = appendDivCompenentGrpToParent("body","spendToDateDiv",[((width / 2 )),((height / 2))])
 
 
 //create svg element and append to body
@@ -362,22 +362,22 @@ for (var i = 0; i < graphComponents.length; i++) {
       // spendToDateMoneyCounter.transition().duration(1000).text(function(d,i){return d.value});
 
 
-
       var spendToDateText = spendToDateDiv.selectAll("div")
         .data([data.slices[0]]);
         spendToDateText.enter()
           .append("div")
           .classed("spendToDateText",true)
-          .attr("dy", ".35em")
+          .style("font-size", ".75em")
           .text("Spent to date this year")
           .style("opacity","0")
           .style("text-align","center")
+          //TODO reference color from data
+          .style("color","#275089")
         spendToDateText.style("transform","0")
-        spendToDateText.transition().duration(1000).style("opacity",1);
-      //Update the position of the div to keep the text centered in the svg
-      // setDivElementPosition(spendToDateDiv,(width / 2 ) - (getHTMLElementWidthHeight(spendToDateDiv)[0] / 2),(height /2) - (getHTMLElementWidthHeight(spendToDateDiv)[1] / 2) )
+        spendToDateText.style("transform","translateY(10px)")
 
-  //   // allow ability to change data
+        spendToDateText.transition().duration(1000).style("opacity",1);
+        centerAnchorPointHtmlElement(spendToDateDiv);
 
     }
 
