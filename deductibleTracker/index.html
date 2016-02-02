@@ -25,7 +25,7 @@ var svg = d3.select("body")
 	.append("svg")
   .attr({width:width,height:height})
   .append("g")
-var graphComponents = ["slices","labelArcs","labelLines","labelText","labelTicks","oopMaxLine","oopMaxText","spendToDateMoneyCounter"];
+var graphComponents = ["emptySlices","filledSlices","labelArcs","labelLines","labelText","labelTicks","oopMaxLine","oopMaxText","spendToDateMoneyCounter"];
 
 
 
@@ -68,24 +68,23 @@ svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
     var arc = d3.svg.arc()
       .outerRadius(radius * 0.8)
       .innerRadius(radius * 0.6)
-      // set the padding between deductible and coinsurance
-      // .padAngle(function(d) {
-      //   if (key(d)=="coinsuranceSTD") {
-      //     return deductiblePadding;
-      //   };
-      //   return 0;
-      // });
+      .padAngle(function(d) {
+        if (key(d)=="coinsurance" || key(d)=="coinsuranceSTD") {
+          return deductiblePadding;
+        };
+        return 0;
+      });
 
-      var arcShadow = d3.svg.arc()
-        .outerRadius(radius * 0.6)
-        .innerRadius(radius * 0.55)
-        // set the padding between deductible and coinsurance
-        // .padAngle(function(d) {
-        //   if (key(d)=="coinsurance") {
-        //     return deductiblePadding;
-        //   };
-        //   return 0;
-        // });
+      var arcFilled = d3.svg.arc()
+        .outerRadius(radius * 0.8)
+        .innerRadius(radius * 0.6)
+        .padAngle(function(d) {
+          if (key(d)=="coinsuranceSTD") {
+            return deductiblePadding;
+            debugger
+          };
+          return 0;
+        });
 
     //arc points for tick marks
     var tickArc = d3.svg.arc()
@@ -110,16 +109,16 @@ svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
       });
 
 
-  /* ------- Draw the PIE SLICES -------*/
+  /* ------- Draw the empty PIE SLICES -------*/
       // a slice is = all the objects in the slice group which at this point is probably empty
-      var slice = svg.select(".slices")
-        .selectAll("path.slice")
-        .data(pie(data.slices), key);
-      slice.enter()
+      var emptySlice = svg.select(".emptySlices")
+        .selectAll("path.emptySlice")
+        .data(pie(data.labels), key);
+      emptySlice.enter()
         .insert("path")
-        .style("fill", function(d) { return d.data.color; })
-        .attr("class", "slice");
-      slice.transition().duration(1000)
+        .style("fill", "#D5D5D5")
+        .attr("class", "emptySlice");
+      emptySlice.transition().duration(1000)
       .attrTween("d", function(d) {
         console.log(key(d),"value:",d.value,", startAngle:",d.startAngle,", endAngle:",d.endAngle);
   			this._current = this._current || d;
@@ -129,8 +128,30 @@ svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
   				return arc(interpolate(t));
   			};
   		})
-    	slice.exit()
+    	emptySlice.exit()
     		.remove();
+
+    /* ------- Draw the FULL PIE SLICES -------*/
+        // a slice is = all the objects in the slice group which at this point is probably empty
+        var filledSlice = svg.select(".filledSlices")
+          .selectAll("path.filledSlice")
+          .data(pie(data.filledSlices), key);
+        filledSlice.enter()
+          .insert("path")
+          .style("fill", function(d) { return d.data.color; })
+          .attr("class", "filledSlice");
+        filledSlice.transition().duration(1000)
+        .attrTween("d", function(d) {
+          console.log(key(d),"value:",d.value,", startAngle:",d.startAngle,", endAngle:",d.endAngle);
+    			this._current = this._current || d;
+    			var interpolate = d3.interpolate(this._current, d);
+    			this._current = interpolate(0);
+    			return function(t) {
+    				return arcFilled(interpolate(t));
+    			};
+    		})
+      	filledSlice.exit()
+      		.remove();
 
 
 
@@ -292,7 +313,7 @@ svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
     var oopMaxLineXOffSet = 40
     var oopMaxLineYOffSet = 5
     var oopMaxLine = svg.select(".oopMaxLine").selectAll("polyline")
-      .data(pie(([data.slices[data.slices.length-1]])));
+      .data(pie(([data.emptySlices[data.emptySlices.length-1]])));
     oopMaxLine.enter()
       .append("polyline")
       .style("stroke", "#8E8E8E")
@@ -308,14 +329,13 @@ svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
     oopMaxLine.transition().duration(1000).style("opacity",1);
 
     var oopMaxText = oopMaxDiv.selectAll("div")
-      .data(pie(([data.slices[data.slices.length-1]])));
+      .data(pie(([data.emptySlices[data.emptySlices.length-1]])));
       oopMaxText.enter()
         .append("div")
         .classed("oopMaxText",true)
         .attr("dy", ".35em")
         .text("Out Of Pocket Maximum:"+ "   " + "$" + data.planInfo[3].value)
         .style("opacity","0")
-        debugger
       oopMaxText.style("transform",function (d) {
         if (d.value!=0) {
           return "translate("+getArcPoints(d)[2]+"px,"+
@@ -369,9 +389,9 @@ svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
     }
 
-  updateGraph(generateData(0,0,0),window.innerWidth/3);
+  updateGraph(generateData(0,0,0,0),window.innerWidth/3);
 
-  var data = generateData(800, 1200, 3700);
+  var data = generateData(800, 1200, .2, 4900);
 
   //make graph responsive
   d3.select(window).on('resize', resize);
@@ -386,18 +406,19 @@ svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
   }, 0);
 
 
-  function generateData(spendToDate, deductible, coinsurance) {
+  function generateData(spendToDate, deductible, coinsurance, oopMax) {
     console.log("entering generate Data","std:",spendToDate,"deductible:",deductible,"coinsurance:",coinsurance);
     var deductibleSTD = spendToDate;
     var coinsuranceSTD = 0;
+    var totalCoinsurance = oopMax - deductible;
     var remainingDeductible = deductible - spendToDate;
-    var remainingCoinsurance = coinsurance - coinsuranceSTD;
+    var remainingCoinsurance = totalCoinsurance - coinsuranceSTD;
 
     if (spendToDate > deductible) {
       deductibleSTD = deductible;
       coinsuranceSTD = spendToDate - deductible;
       remainingDeductible = 0;
-      remainingCoinsurance = coinsurance - coinsuranceSTD;
+      remainingCoinsurance = totalCoinsurance - coinsuranceSTD;
     }
 
     return {
@@ -409,23 +430,37 @@ svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
         { "section": 'remainingCoinsurance', "value": remainingCoinsurance, "color" : "#D5D5D5"}
       ],
 
+      filledSlices: [
+        { "section": 'deductibleSTD', "value": deductibleSTD, "color" : "#275089"},
+        { "section": 'remainingDeductible', "value": remainingDeductible, "color" : "#D5D5D5"},
+        { "section": 'coinsuranceSTD', "value": coinsuranceSTD, "color" : "#275089"},
+        { "section": 'remainingCoinsurance', "value": remainingCoinsurance, "color" : "none"}
+      ],
+
+      emptySlices: [
+        { "section": 'deductibleSTD', "value": deductibleSTD, "color" : "#275089"},
+        { "section": 'deductible', "value": remainingDeductible, "color" : "#D5D5D5"},
+        { "section": 'totalCoinsurance', "value": totalCoinsurance, "color" : "#275089"},
+        { "section": 'remainingCoinsurance', "value": remainingCoinsurance, "color" : "#D5D5D5"}
+      ],
+
       labels: [
         { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", label: "Deductible"},
-        { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", label: "Coinsurance"},
+        { "section": 'coinsurance', "value": totalCoinsurance, "color" : "#56BFDD", label: "Coinsurance"},
       ],
 
       ticks: [
         { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", "flag": "Start"},
         { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", "flag": "End"},
-        { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", "flag": "Start"},
-        { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", "flag": "End"},
+        { "section": 'coinsurance', "value": totalCoinsurance, "color" : "#56BFDD", "flag": "Start"},
+        { "section": 'coinsurance', "value": totalCoinsurance, "color" : "#56BFDD", "flag": "End"},
       ],
 
       planInfo:[
         { "section": 'Spent To Date', "value": spendToDate, "color" : "#275089"},
         { "section": 'Deductible', "value": deductible, "color" : "#F17F19"},
         { "section": 'Coinsurance', "value": "80/20", "color" : "#56BFDD"},
-        { "section": 'Out Of Pocket Maximum', "value": deductible + coinsurance, "color" : "#56BFDD"}
+        { "section": 'Out Of Pocket Maximum', "value": oopMax, "color" : "#56BFDD"}
       ]
     };
   }
@@ -443,12 +478,13 @@ svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
   // }, 3000);
 
   $(function () {
-    $("#deductible, #coinsurance, #spend-to-date")
+    $("#deductible, #coinsurance, #spend-to-date, #oopMax")
       .change(function () {
         var spendToDate = parseFloat( $("#spend-to-date").val() );
         var deductible =  parseFloat( $("#deductible").val() );
         var coinsurance = parseFloat( $("#coinsurance").val() );
-        updateGraph(generateData(spendToDate, deductible, coinsurance), window.innerWidth / 3);
+        var oopMax = parseFloat( $("#oopMax").val() );
+        updateGraph(generateData(spendToDate, deductible, coinsurance, oopMax), window.innerWidth / 3);
       });
   });
   //NOTE Padradius would be helpful for the shadow effect
@@ -457,10 +493,13 @@ svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
     Deductible <input type="number" id="deductible" step="100" value="1200" />
   </label>
   <label>
-    Coinsurance <input type="number" id="coinsurance" step="100" value="3700" />
+    Coinsurance <input type="number" id="coinsurance" step=".1" value=".2" />
   </label>
   <label>
     Spend to date <input type="number" id="spend-to-date" step="100" value="500" />
+  </label>
+  <label>
+    oopMax <input type="number" id="oopMax" step="100" value="4900" />
   </label>
   </body>
 </html>
