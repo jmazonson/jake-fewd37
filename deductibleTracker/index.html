@@ -33,9 +33,7 @@ for (var i = 0; i < graphComponents.length; i++) {
   appendSvgCompenentGrpToParent(svg,graphComponents[i])
 }
 
-    svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-
+svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
 
  ///---------------- Start the data dicing ------------------///
@@ -71,23 +69,23 @@ for (var i = 0; i < graphComponents.length; i++) {
       .outerRadius(radius * 0.8)
       .innerRadius(radius * 0.6)
       // set the padding between deductible and coinsurance
-      .padAngle(function(d) {
-        if (key(d)=="coinsurance") {
-          return deductiblePadding;
-        };
-        return 0;
-      });
+      // .padAngle(function(d) {
+      //   if (key(d)=="coinsuranceSTD") {
+      //     return deductiblePadding;
+      //   };
+      //   return 0;
+      // });
 
       var arcShadow = d3.svg.arc()
         .outerRadius(radius * 0.6)
         .innerRadius(radius * 0.55)
         // set the padding between deductible and coinsurance
-        .padAngle(function(d) {
-          if (key(d)=="coinsurance") {
-            return deductiblePadding;
-          };
-          return 0;
-        });
+        // .padAngle(function(d) {
+        //   if (key(d)=="coinsurance") {
+        //     return deductiblePadding;
+        //   };
+        //   return 0;
+        // });
 
     //arc points for tick marks
     var tickArc = d3.svg.arc()
@@ -116,26 +114,14 @@ for (var i = 0; i < graphComponents.length; i++) {
       // a slice is = all the objects in the slice group which at this point is probably empty
       var slice = svg.select(".slices")
         .selectAll("path.slice")
-        // for each element in data get the start and end angles of that slice.
-        //
         .data(pie(data.slices), key);
-      //returns place holders for missing elements enter is for all the new data enter represents the new elements
-      //selecting new
       slice.enter()
-        // I think insert is like append except it puts it above in the dom rather than under
-        // path is the type of element im creating
         .insert("path")
-        // make the fill the color associated with that element of the data set
         .style("fill", function(d) { return d.data.color; })
-        // make the path be slice
         .attr("class", "slice");
-
-      // slice.attr("d",function(d) {
-      //   return arc(d)
-      // })
       slice.transition().duration(1000)
       .attrTween("d", function(d) {
-        // this is a variable this is like
+        console.log(key(d),"value:",d.value,", startAngle:",d.startAngle,", endAngle:",d.endAngle);
   			this._current = this._current || d;
   			var interpolate = d3.interpolate(this._current, d);
   			this._current = interpolate(0);
@@ -339,7 +325,7 @@ for (var i = 0; i < graphComponents.length; i++) {
 
   /* ------- Draw the Spend to date counter-------*/
     var spendToDateMoneyCounter = svg.select(".spendToDateMoneyCounter").selectAll("text")
-      .data(data.slices);
+      .data(data.planInfo);
       spendToDateMoneyCounter.enter()
         .append("text")
         .text("0")
@@ -363,7 +349,7 @@ for (var i = 0; i < graphComponents.length; i++) {
 
 
       var spendToDateText = spendToDateDiv.selectAll("div")
-        .data([data.slices[0]]);
+        .data([data.planInfo[0]]);
         spendToDateText.enter()
           .append("div")
           .classed("spendToDateText",true)
@@ -383,7 +369,7 @@ for (var i = 0; i < graphComponents.length; i++) {
 
   updateGraph(generateData(0,0,0),window.innerWidth/3);
 
-  var data = generateData(550, 1200, 3700);
+  var data = generateData(800, 1200, 3700);
 
   //make graph responsive
   d3.select(window).on('resize', resize);
@@ -399,12 +385,26 @@ for (var i = 0; i < graphComponents.length; i++) {
 
 
   function generateData(spendToDate, deductible, coinsurance) {
+    console.log("entering generate Data","std:",spendToDate,"deductible:",deductible,"coinsurance:",coinsurance);
+    var deductibleSTD = spendToDate;
+    var coinsuranceSTD = 0;
+    var remainingDeductible = deductible - spendToDate;
+    var remainingCoinsurance = coinsurance - coinsuranceSTD;
+
+    if (spendToDate > deductible) {
+      deductibleSTD = deductible;
+      coinsuranceSTD = spendToDate - deductible;
+      remainingDeductible = 0;
+      remainingCoinsurance = coinsurance - coinsuranceSTD;
+    }
+
     return {
       slices: [
-        { "section": 'spendToDate', "value": spendToDate, "color" : "#275089"},
-        { "section": 'deductibleBar', "value": deductible-spendToDate, "color" : "#D5D5D5"},
-        // { "section": 'deductibleBreak', "value": 80, "color" : "white"},
-        { "section": 'coinsurance', "value": coinsurance, "color" : "#D5D5D5"},
+        { "section": 'deductibleSTD', "value": deductibleSTD, "color" : "#275089"},
+        { "section": 'remainingDeductible', "value": remainingDeductible, "color" : "#D5D5D5"},
+        { "section": 'padding', "value": 75, "color" : "#FFF"},
+        { "section": 'coinsuranceSTD', "value": coinsuranceSTD, "color" : "#275089"},
+        { "section": 'remainingCoinsurance', "value": remainingCoinsurance, "color" : "#D5D5D5"}
       ],
 
       labels: [
@@ -417,6 +417,13 @@ for (var i = 0; i < graphComponents.length; i++) {
         { "section": 'deductibleLabel', "value": deductible, "color" : "#F17F19", "flag": "End"},
         { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", "flag": "Start"},
         { "section": 'coinsurance', "value": coinsurance, "color" : "#56BFDD", "flag": "End"},
+      ],
+
+      planInfo:[
+        { "section": 'Spent To Date', "value": spendToDate, "color" : "#275089"},
+        { "section": 'Deductible', "value": deductible, "color" : "#F17F19"},
+        { "section": 'Coinsurance', "value": "80/20", "color" : "#56BFDD"},
+        { "section": 'Out Of Pocket Maximum', "value": deductible + coinsurance, "color" : "#56BFDD"}
       ]
     };
   }
@@ -436,12 +443,13 @@ for (var i = 0; i < graphComponents.length; i++) {
   $(function () {
     $("#deductible, #coinsurance, #spend-to-date")
       .change(function () {
-        var spendToDate = $("#spend-to-date").val();
-        var deductible = $("#deductible").val();
-        var coinsurance = $("#coinsurance").val();
+        var spendToDate = parseFloat( $("#spend-to-date").val() );
+        var deductible =  parseFloat( $("#deductible").val() );
+        var coinsurance = parseFloat( $("#coinsurance").val() );
         updateGraph(generateData(spendToDate, deductible, coinsurance), window.innerWidth / 3);
       });
   });
+  //NOTE Padradius would be helpful for the shadow effect
   </script>
   <label>
     Deductible <input type="number" id="deductible" step="100" value="1200" />
@@ -450,7 +458,7 @@ for (var i = 0; i < graphComponents.length; i++) {
     Coinsurance <input type="number" id="coinsurance" step="100" value="3700" />
   </label>
   <label>
-    Spend to date <input type="number" id="spend-to-date" step="100" value="550" />
+    Spend to date <input type="number" id="spend-to-date" step="100" value="500" />
   </label>
   </body>
 </html>

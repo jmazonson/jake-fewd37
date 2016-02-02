@@ -22,6 +22,15 @@ function appendSvgCompenentGrpToParent(parent,className){
   .attr("class",className)
 }
 
+function centerAnchorPointHtmlElement(htmlElement){
+  var offsetx = htmlElement.node().getBoundingClientRect().width/2;
+  htmlElement.style("left",""+"-"+offsetx+"px");
+}
+
+
+
+//NOT BEING USED
+
 function verticallyAlignHTMLElementWithSVGElement(svgElement,htmlElement){
   var svgElementBBox = svgElement.node().getBBox();
   var htmlElementRect = htmlElement.node().getBoundingClientRect();
@@ -29,9 +38,4 @@ function verticallyAlignHTMLElementWithSVGElement(svgElement,htmlElement){
   //TODO set the html x position to equal (html element width / 2 ) - svgElementCenterPoint
   htmlElementPositionAligned = svgElementCenterPoint[0] - (htmlElementRect.width/2);
   htmlElement.style("left",htmlElementPositionAligned)
-}
-
-function centerAnchorPointHtmlElement(htmlElement){
-  var offsetx = htmlElement.node().getBoundingClientRect().width/2;
-  htmlElement.style("left",""+"-"+offsetx+"px");
 }
